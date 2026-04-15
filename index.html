@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">ANON</div>
+  <img class="avatar" src="images/avatar.png" alt="">
+</header>
+
+<main class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Minecraft Builder</h1>
+    <p>Projects • Models • Visual Design</p>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="section">
+    <h2>Projects</h2>
+    <div class="grid" id="projects"></div>
+  </section>
+
+  <!-- MODELS -->
+  <section class="section">
+    <h2>Just Models</h2>
+    <div class="grid small" id="models"></div>
+  </section>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <span class="close" id="close">&times;</span>
+  <img class="modal-img" id="modalImg">
+  <div class="modal-caption" id="caption"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
