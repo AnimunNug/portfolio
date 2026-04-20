@@ -1,0 +1,234 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Портфолио — макет</title>
+<style>
+  :root{
+    --page-bg: #f6f6f6;
+    --card-bg: #ffffff;
+    --gap: 20px;
+    --hero-height: 44vh;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background:var(--page-bg);
+    color:#222;
+  }
+
+  /* Контейнер страницы */
+  .page{
+    max-width:420px; /* как на скетче — узкая колонка */
+    margin:12px auto;
+    border:1px solid rgba(0,0,0,0.08);
+    background:white;
+    overflow:hidden;
+    border-radius:8px;
+  }
+
+  /* Шапка */
+  header.hero{
+    position:relative;
+    height:var(--hero-height);
+    padding:18px;
+    overflow:visible;
+    background:linear-gradient(180deg, #fff 0%, #fafafa 100%);
+  }
+  .hero-inner{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    height:100%;
+  }
+  .hero-left{
+    width:52%;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    position:relative;
+    padding-bottom:6px;
+  }
+  /* плейсхолдер персонажа */
+  .character{
+    width:160px;
+    height:180px;
+    background:linear-gradient(180deg,#eee,#ddd);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    color:#888;
+    transform:rotate(-7deg) translateY(4px);
+    transform-origin: bottom left;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  }
+
+  .hero-right{
+    width:48%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:8px;
+    padding-right:6px;
+  }
+  .hero-right h1{
+    margin:0;
+    font-size:clamp(18px,4.8vw,28px);
+    line-height:1.02;
+    letter-spacing:0.6px;
+  }
+  .hero-right p{
+    margin:0;
+    opacity:0.8;
+    font-size:14px;
+  }
+
+  /* Полоса проектов — выступающая "полка" */
+  .projects-row{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:-26px; /* выступает над следующим блоком */
+    height:64px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:8px;
+    z-index:6;
+    transform:rotate(1.5deg);
+    background:var(--card-bg);
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  }
+  .pill{
+    width:84px;
+    height:48px;
+    background:#f0f0f6;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:#666;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.03);
+    transform: rotate(-2deg);
+  }
+  .pill:nth-child(odd){ transform: rotate(2deg); }
+
+  /* Основной контент — сетка работ */
+  main.grid{
+    padding:64px 18px 18px; /* сверху учтён выступ projects-row */
+  }
+  .section-title{
+    font-weight:600;
+    margin:6px 0 12px;
+    font-size:18px;
+  }
+  .works{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:16px;
+  }
+  .work-item{
+    background:var(--card-bg);
+    height:84px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 14px rgba(0,0,0,0.04);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .work-item:hover{
+    transform:translateY(-6px) scale(1.03);
+    box-shadow:0 12px 30px rgba(0,0,0,0.08);
+  }
+
+  /* Футер */
+  footer.contacts{
+    padding:30px 18px 36px;
+    position:relative;
+    min-height:120px;
+  }
+  .contacts-left{
+    max-width:70%;
+  }
+  .contacts-left p{ margin:4px 0; font-size:15px }
+  .mini-character{
+    position:absolute;
+    right:12px;
+    bottom:12px;
+    width:96px;
+    height:64px;
+    background:#efefef;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(12deg);
+    box-shadow:0 8px 18px rgba(0,0,0,0.06);
+  }
+
+  /* Адаптив */
+  @media (max-width:420px){
+    .page{ margin:6px; }
+    .hero-inner{ flex-direction:column; align-items:flex-start; gap:8px; padding-top:8px }
+    .hero-left, .hero-right{ width:100% }
+    .character{ width:46vw; height:52vw; transform:rotate(-4deg) translateY(2px) }
+    .projects-row{ left:12px; right:12px; bottom:-32px; height:68px; transform:rotate(0.6deg) }
+    .works{ grid-template-columns: repeat(2, 1fr); }
+    .mini-character{ width:80px; height:50px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="character">персонаж</div>
+        </div>
+        <div class="hero-right">
+          <h1>Animrun — just my stuff</h1>
+          <p>Короткая подпись / описание — кто вы и что делаете</p>
+        </div>
+      </div>
+
+      <div class="projects-row" aria-hidden="true">
+        <div class="pill">proj 1</div>
+        <div class="pill">proj 2</div>
+        <div class="pill">proj 3</div>
+        <div class="pill">proj 4</div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <div class="section-title">my works</div>
+      <div class="works">
+        <div class="work-item">1</div>
+        <div class="work-item">2</div>
+        <div class="work-item">3</div>
+        <div class="work-item">4</div>
+        <div class="work-item">5</div>
+        <div class="work-item">6</div>
+        <div class="work-item">7</div>
+        <div class="work-item">8</div>
+        <div class="work-item">9</div>
+      </div>
+    </main>
+
+    <footer class="contacts">
+      <div class="contacts-left">
+        <p><strong>contacts</strong></p>
+        <p>discord: ваш_ник</p>
+      </div>
+      <div class="mini-character">🙂</div>
+    </footer>
+  </div>
+</body>
+</html>
