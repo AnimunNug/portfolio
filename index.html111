@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animun | Playful Portfolio</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Сочные "игрушечные" цвета */
+      --bg: #fff5e6;
+      --accent: #ff9d4d;
+      --bubble: #ffd5a1;
+      --text-main: #6b4f3a;
+      --glass: rgba(255, 255, 255, 0.4);
+      --shadow: rgba(243, 157, 77, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      background: var(--bg); 
+      font-family: 'Quicksand', sans-serif; 
+      color: var(--text-main);
+      overflow-x: hidden;
+      /* Текстура легкого шума или паттерна на фоне для ретро-стиля */
+      background-image: radial-gradient(#ffe0b3 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    .top-label {
+      text-align: center;
+      padding: 1.5rem 0 0;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    /* --- HERO С ПЛАСТИКОВЫМ ЭФФЕКТОМ --- */
+    .hero {
+      position: relative;
+      height: 80vh;
+      display: flex;
+      align-items: center;
+      padding: 0 8%;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-right h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      color: var(--accent);
+      text-shadow: 4px 4px 0px #fff, 8px 8px 0px var(--shadow);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .hero-right p {
+      background: var(--white);
+      display: inline-block;
+      padding: 10px 20px;
+      background: white;
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: inset 0 -4px 0px #eee;
+    }
+
+    /* РАМКА-ИГРУШКА */
+    .character-frame {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1/1.2;
+      background: var(--glass);
+      border: 8px solid #fff;
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px var(--shadow), inset 0 0 20px rgba(255,255,255,0.5);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .character-peek {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110%;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+    }
+
+    /* --- КАРУСЕЛЬ КАК ПУЛЬТ УПРАВЛЕНИЯ --- */
+    .projects-strip {
+      margin: -20px 8% 0;
+      background: #fff;
+      border-radius: 40px;
+      padding: 2rem;
+      border: 6px solid var(--bubble);
+      box-shadow: 0 15px 0px var(--bubble); /* Эффект толстой кнопки */
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+
+    .strip-title {
+      font-family: 'Fredoka One', cursive;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    .carousel-item {
+      width: 180px;
+      height: 110px;
+      border-radius: 25px;
+      border: 4px solid var(--bg);
+      transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      flex-shrink: 0;
+    }
+
+    .carousel-item:hover {
+      transform: scale(1.1) rotate(3deg);
+      border-color: var(--accent);
+    }
+
+    /* --- СЕТКА КВАДРАТОВ-ЖЕЛЕ --- */
+    .grid-works { padding: 6rem 8%; }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .work-card {
+      background: #fff;
+      border-radius: 35px;
+      padding: 10px;
+      box-shadow: 0 10px 0px #f0f0f0;
+      transition: 0.3s;
+      aspect-ratio: 1/1;
+    }
+
+    .work-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 25px;
+    }
+
+    .work-card:hover {
+      transform: translateY(5px);
+      box-shadow: 0 4px 0px #f0f0f0;
+    }
+
+    /* --- ПОПАП (МЯГКИЙ ПУЗЫРЬ) --- */
+    .popup-content {
+      background: #fff;
+      border-radius: 60px;
+      border: 10px solid var(--accent);
+      box-shadow: 0 30px 0px rgba(0,0,0,0.1);
+    }
+
+    /* АНИМАЦИИ */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-20px) rotate(2deg); }
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .carousel-track { display: flex; gap: 20px; animation: scroll 30s linear infinite; width: max-content; }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .grid-container { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-label">✿ welcome to my world ✿</div>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="character-frame">
+          <img src="https://via.placeholder.com/450x550/ff9d4d/ffffff?text=MY+ART" class="character-peek">
+        </div>
+      </div>
+      <div class="hero-right" id="heroText">
+        <h1>Hi, I'm<br>Animun</h1>
+        <p>making cute & cool things</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="projects-strip">
+    <div class="strip-title">⭐ where i helped ⭐</div>
+    <div class="carousel-container">
+      <div class="carousel-track" id="carouselTrack"></div>
+    </div>
+  </section>
+
+  <main class="grid-works">
+    <div class="grid-container" id="worksGrid"></div>
+  </main>
+
+  <script>
+    // Параллакс для "игрушечного" улетания заголовка
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const heroText = document.getElementById('heroText');
+      if (heroText && window.innerWidth > 900) {
+        heroText.style.transform = `translateY(-${scrollY * 0.8}px) rotate(${scrollY * 0.02}deg)`;
+        heroText.style.opacity = 1 - scrollY / 600;
+      }
+    });
+
+    // Наполнение данными (карусель)
+    const projectNames = ['Alpha', 'VFX', 'Trailer', 'Motion', '3D Art', 'Shorts'];
+    const track = document.getElementById('carouselTrack');
+    const itemsHTML = projectNames.map(name => `
+      <div class="carousel-item">
+        <img src="https://via.placeholder.com/180x110/ffd5a1/6b4f3a?text=${name}" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+    `).join('');
+    track.innerHTML = itemsHTML + itemsHTML;
+
+    // Сетка работ
+    const grid = document.getElementById('worksGrid');
+    for (let i = 1; i <= 9; i++) {
+      grid.innerHTML += `
+        <div class="work-card">
+          <img src="https://via.placeholder.com/600x600/fff/ff9d4d?text=ART+${i}">
+        </div>`;
+    }
+  </script>
+</body>
+</html>
