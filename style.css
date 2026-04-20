@@ -1,133 +1,321 @@
+/* ----- БАЗОВЫЕ СБРОСЫ ----- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  font-family: sans-serif;
-  background: #111;
-  color: white;
-  max-width: 1000px;  
-  margin: 0 auto;     
-  padding: 0 20px;     
+  background: #0b0b0f;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #f0f0f0;
+  line-height: 1.4;
+  overflow-x: hidden;
 }
 
-/* --- Секции --- */
+/* ----- ШАПКА (HERO) ----- */
 .hero {
-  background: #222;
-  padding: 100px 20px;
-  transform: skewY(-5deg);
+  background: linear-gradient(145deg, #1e1e2a 0%, #13131c 100%);
+  padding: 2rem 5% 3rem;
+  position: relative;
+  z-index: 1;
 }
 
-.hero .content {
-  transform: skewY(5deg);
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Появление */
-.fade {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: 0.8s ease;
-}
-
-.fade.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* --- Работы --- */
-.works {
-  padding: 50px 20px;
+.hero-left {
+  flex: 1 1 50%;
   text-align: center;
 }
 
-.grid {
+.character-big {
+  max-width: 90%;
+  height: auto;
+  transform: rotate(-6deg) translateY(4px);
+  transform-origin: bottom left;
+  filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+  transition: transform 0.2s ease;
+}
+
+.character-big:hover {
+  transform: rotate(-4deg) translateY(2px) scale(1.01);
+}
+
+.hero-right {
+  flex: 1 1 45%;
+  text-align: left;
+}
+
+.hero-right h1 {
+  font-size: clamp(2rem, 8vw, 4rem);
+  background: linear-gradient(135deg, #ffaa66, #ff6633);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.75rem;
+}
+
+.hero-right p {
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  color: #ccc;
+  border-left: 4px solid #ff6633;
+  padding-left: 1.2rem;
+}
+
+/* ----- БЕСКОНЕЧНАЯ КАРУСЕЛЬ ПРОЕКТОВ (вместо старой полосы) ----- */
+.projects-carousel-wrapper {
+  margin-top: -28px;
+  position: relative;
+  z-index: 3;
+  background: #0b0b0f;
+  padding: 1.5rem 5% 2rem;
+  border-radius: 30px 30px 0 0;
+}
+
+.carousel-title {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  color: #ffaa66;
+  letter-spacing: 1px;
+}
+
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: scrollProjects 30s linear infinite;
+}
+
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+.carousel-item {
+  flex-shrink: 0;
+  width: 180px;
+  height: 120px;
+  background: #1e1e2e;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+}
+
+.carousel-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(255,102,51,0.4);
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes scrollProjects {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ----- СЕТКА РАБОТ ----- */
+.grid-works {
+  padding: 2rem 5% 4rem;
+  background: #0b0b0f;
+}
+
+.works-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #ffaa66;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 1.8rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.card {
-  background: #444;
-  height: 120px;
-  cursor: pointer;
-  transition: transform 0.3s, background 0.3s;
-  position: relative;
+.work-card {
+  background: #1e1e2a;
+  border-radius: 20px;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
 }
 
-.card:hover {
-  transform: translateY(-10px) scale(1.03);
-  background: #666;
+.work-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
 }
 
-/* затемнение при hover */
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.3);
-  opacity: 0;
-  transition: 0.3s;
+.work-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 20px 30px -8px rgba(255,102,51,0.3);
 }
 
-.card:hover::after {
-  opacity: 1;
+.work-card:hover img {
+  transform: scale(1.03);
 }
 
-/* --- Низ --- */
-.footer {
-  background: #222;
-  padding: 50px;
-  transform: skewY(5deg);
+/* ----- ФУТЕР ----- */
+footer.contacts {
+  background: #111116;
+  padding: 2rem 5%;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  border-top: 1px solid #2a2a2a;
 }
 
-.footer p {
-  transform: skewY(-5deg);
+.contacts-text p {
+  margin: 0.3rem 0;
+  color: #bbb;
 }
 
-/* --- POPUP --- */
+.small-character {
+  width: 80px;
+  height: auto;
+}
+
+.small-character img {
+  width: 100%;
+  height: auto;
+  transform: rotate(12deg);
+  transform-origin: bottom right;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  transition: transform 0.2s;
+}
+
+.small-character img:hover {
+  transform: rotate(8deg) scale(1.05);
+}
+
+/* ----- POPUP ----- */
 .popup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-
   opacity: 0;
-  pointer-events: none;
-  transition: 0.4s;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 1000;
 }
 
-.popup.active {
+.popup.show {
   opacity: 1;
-  pointer-events: all;
+  visibility: visible;
 }
 
 .popup-content {
-  background: #222;
-  padding: 20px;
-  max-width: 400px;
-  transform: scale(0.8);
-  transition: 0.4s;
+  background: #1e1e2a;
+  padding: 1.5rem;
+  border-radius: 28px;
+  max-width: 90vw;
+  width: 600px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.25s;
 }
 
-.popup.active .popup-content {
+.popup.show .popup-content {
   transform: scale(1);
 }
 
 .popup img {
   width: 100%;
+  border-radius: 16px;
+  margin-bottom: 1rem;
 }
 
-/* --- Переход карточки --- */
-.card.fly {
-  position: fixed;
-  z-index: 999;
-  transition: all 0.6s ease;
+.popup p {
+  font-size: 1.2rem;
+  color: #ffddbb;
+}
+
+/* ----- АДАПТИВ ----- */
+@media (max-width: 800px) {
+  .hero-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-right {
+    text-align: center;
+  }
+  .hero-right p {
+    border-left: none;
+    padding-left: 0;
+  }
+  .character-big {
+    max-width: 70%;
+    transform: rotate(-3deg) translateY(2px);
+  }
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .carousel-item {
+    width: 150px;
+    height: 100px;
+  }
+  .carousel-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+  .carousel-item {
+    width: 130px;
+    height: 90px;
+  }
+  .small-character {
+    width: 60px;
+  }
+  .projects-carousel-wrapper {
+    margin-top: -20px;
+  }
 }

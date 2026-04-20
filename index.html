@@ -1,47 +1,522 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Portfolio</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Portfolio | Аниматор / проекты</title>
+  <style>
+    /* ----- БАЗОВЫЕ СБРОСЫ ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0b0b0f;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #f0f0f0;
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
+
+    /* ----- ШАПКА (HERO) ----- */
+    .hero {
+      background: linear-gradient(145deg, #1e1e2a 0%, #13131c 100%);
+      padding: 2rem 5% 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .hero-left {
+      flex: 1 1 50%;
+      text-align: center;
+    }
+
+    .character-big {
+      max-width: 90%;
+      height: auto;
+      transform: rotate(-6deg) translateY(4px);
+      transform-origin: bottom left;
+      filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+      transition: transform 0.2s ease;
+    }
+
+    .character-big:hover {
+      transform: rotate(-4deg) translateY(2px) scale(1.01);
+    }
+
+    .hero-right {
+      flex: 1 1 45%;
+      text-align: left;
+    }
+
+    .hero-right h1 {
+      font-size: clamp(2rem, 8vw, 4rem);
+      background: linear-gradient(135deg, #ffaa66, #ff6633);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-right p {
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      color: #ccc;
+      border-left: 4px solid #ff6633;
+      padding-left: 1.2rem;
+    }
+
+    /* ----- БЕСКОНЕЧНАЯ КАРУСЕЛЬ ПРОЕКТОВ (участие) ----- */
+    .projects-carousel-wrapper {
+      margin-top: -28px;
+      position: relative;
+      z-index: 3;
+      background: #0b0b0f;
+      padding: 1.5rem 5% 2rem;
+      border-radius: 30px 30px 0 0;
+    }
+
+    .carousel-title {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+      color: #ffaa66;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .carousel-container {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: scrollProjects 30s linear infinite;
+    }
+
+    .carousel-track:hover {
+      animation-play-state: paused;
+    }
+
+    .carousel-item {
+      flex-shrink: 0;
+      width: 180px;
+      height: 120px;
+      background: #1e1e2e;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+    }
+
+    .carousel-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(255,102,51,0.4);
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes scrollProjects {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ----- СЕТКА РАБОТ (мои работы) ----- */
+    .grid-works {
+      padding: 2rem 5% 4rem;
+      background: #0b0b0f;
+    }
+
+    .works-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #ffaa66;
+      letter-spacing: 1px;
+      position: relative;
+      width: 100%;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .work-card {
+      background: #1e1e2a;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s;
+      aspect-ratio: 1 / 1;
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.5);
+    }
+
+    .work-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .work-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 20px 30px -8px rgba(255,102,51,0.3);
+    }
+
+    .work-card:hover img {
+      transform: scale(1.03);
+    }
+
+    /* ----- ФУТЕР С КОНТАКТАМИ И ЛЕЖАЩИМ ПЕРСОНАЖЕМ ----- */
+    footer.contacts {
+      background: #111116;
+      padding: 2rem 5%;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .contacts-text p {
+      margin: 0.3rem 0;
+      color: #bbb;
+      font-size: 0.95rem;
+    }
+
+    .small-character {
+      width: 80px;
+      height: auto;
+    }
+
+    .small-character img {
+      width: 100%;
+      height: auto;
+      transform: rotate(12deg);
+      transform-origin: bottom right;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: transform 0.2s;
+    }
+
+    .small-character img:hover {
+      transform: rotate(8deg) scale(1.05);
+    }
+
+    /* ----- POPUP (окно с деталями) ----- */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s;
+      z-index: 1000;
+    }
+
+    .popup.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup-content {
+      background: #1e1e2a;
+      padding: 1.5rem;
+      border-radius: 28px;
+      max-width: 90vw;
+      width: 600px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.25s;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .popup.show .popup-content {
+      transform: scale(1);
+    }
+
+    .popup img {
+      width: 100%;
+      border-radius: 16px;
+      margin-bottom: 1rem;
+    }
+
+    .popup p {
+      font-size: 1.2rem;
+      color: #ffddbb;
+    }
+
+    /* ----- АДАПТИВНОСТЬ (мобильные устройства) ----- */
+    @media (max-width: 800px) {
+      .hero-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-right {
+        text-align: center;
+      }
+      .hero-right p {
+        border-left: none;
+        padding-left: 0;
+      }
+      .character-big {
+        max-width: 70%;
+        transform: rotate(-3deg) translateY(2px);
+      }
+      .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .carousel-item {
+        width: 150px;
+        height: 100px;
+      }
+      .carousel-title {
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+      .carousel-item {
+        width: 130px;
+        height: 90px;
+      }
+      .small-character {
+        width: 60px;
+      }
+      .projects-carousel-wrapper {
+        margin-top: -20px;
+      }
+      .works-title {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* небольшая анимация появления карточек */
+    .work-card {
+      opacity: 0;
+      animation: fadeInUp 0.4s forwards;
+      animation-delay: calc(var(--order) * 0.05s);
+    }
+    .grid-container .work-card:nth-child(1) { --order: 1; }
+    .grid-container .work-card:nth-child(2) { --order: 2; }
+    .grid-container .work-card:nth-child(3) { --order: 3; }
+    .grid-container .work-card:nth-child(4) { --order: 4; }
+    .grid-container .work-card:nth-child(5) { --order: 5; }
+    .grid-container .work-card:nth-child(6) { --order: 6; }
+    .grid-container .work-card:nth-child(7) { --order: 7; }
+    .grid-container .work-card:nth-child(8) { --order: 8; }
+    .grid-container .work-card:nth-child(9) { --order: 9; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Верх -->
-<section class="hero">
-  <div class="content">
-    <h1>My Portfolio</h1>
-    <p>animation / projects / stuff</p>
+<!-- ШАПКА С БОЛЬШИМ ПЕРСОНАЖЕМ И ТЕКСТОМ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <img src="https://via.placeholder.com/450x550/ff8844/fff?text=BIG+CHARACTER" alt="Персонаж" class="character-big">
+    </div>
+    <div class="hero-right">
+      <h1>@your_nickname</h1>
+      <p>Анимация / проекты / эксперименты</p>
+    </div>
   </div>
-</section>
+</header>
 
-<!-- Работы -->
-<section class="works">
-  <h2>My works</h2>
-
-  <div class="grid">
-    <div class="card" onclick="openPopup('img1.jpg', 'Описание работы')"></div>
-    <div class="card" onclick="openPopup('img2.jpg', 'Описание работы')"></div>
-    <div class="card" onclick="openPopup('img3.jpg', 'Описание работы')"></div>
-    <div class="card" onclick="openPopup('img4.jpg', 'Описание работы')"></div>
-    <div class="card" onclick="openPopup('img5.jpg', 'Описание работы')"></div>
-    <div class="card" onclick="openPopup('img6.jpg', 'Описание работы')"></div>
+<!-- БЕСКОНЕЧНАЯ КАРУСЕЛЬ ПРОЕКТОВ (участие) -->
+<div class="projects-carousel-wrapper">
+  <h3 class="carousel-title">📌 Проекты, в которых я участвовал</h3>
+  <div class="carousel-container">
+    <div class="carousel-track">
+      <!-- оригинальный набор изображений (будет клонирован скриптом) -->
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/3a6ea5/fff?text=Project+Alpha" alt="Проект Alpha"></div>
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/5a3a6e/fff?text=Project+VFX" alt="VFX проект"></div>
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/6e5a3a/fff?text=Game+Trailer" alt="Игровой трейлер"></div>
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/3a6e5a/fff?text=Short+Film" alt="Короткий метр"></div>
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/9e3a6e/fff?text=Motion+Design" alt="Motion дизайн"></div>
+      <div class="carousel-item"><img src="https://via.placeholder.com/180x120/6e9e3a/fff?text=3D+Character" alt="3D персонаж"></div>
+    </div>
   </div>
-</section>
+</div>
 
-<!-- Контакты -->
-<section class="footer">
-  <p>contacts: discord</p>
-</section>
+<!-- СЕТКА РАБОТ (мои работы) -->
+<main class="grid-works">
+  <h2 class="works-title">🎨 Мои работы</h2>
+  <div class="grid-container">
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+1', 'Анимационный ролик «Полёт» — 3D графика, цикличная анимация')">
+      <img src="https://via.placeholder.com/300x300/3a6ea5/fff?text=WORK+1" alt="Работа 1">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+2', 'Стилизованный трейлер для инди-игры')">
+      <img src="https://via.placeholder.com/300x300/5a3a6e/fff?text=WORK+2" alt="Работа 2">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+3', 'Motion graphics для музыкального клипа')">
+      <img src="https://via.placeholder.com/300x300/6e5a3a/fff?text=WORK+3" alt="Работа 3">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+4', 'Короткометражный фильм «Отражение» — постпродакшн')">
+      <img src="https://via.placeholder.com/300x300/3a6e5a/fff?text=WORK+4" alt="Работа 4">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+5', 'Анимация персонажа для RPG')">
+      <img src="https://via.placeholder.com/300x300/9e3a6e/fff?text=WORK+5" alt="Работа 5">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+6', 'Рекламный ролик с элементами VFX')">
+      <img src="https://via.placeholder.com/300x300/6e9e3a/fff?text=WORK+6" alt="Работа 6">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+7', 'Экспериментальная 2D анимация')">
+      <img src="https://via.placeholder.com/300x300/aa6644/fff?text=WORK+7" alt="Работа 7">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+8', 'Создание окружения и фонов для анимационного сериала')">
+      <img src="https://via.placeholder.com/300x300/44aa66/fff?text=WORK+8" alt="Работа 8">
+    </div>
+    <div class="work-card" onclick="openPopup('https://via.placeholder.com/800x600/444/fff?text=Work+9', 'Тизер с процедурной анимацией')">
+      <img src="https://via.placeholder.com/300x300/6644aa/fff?text=WORK+9" alt="Работа 9">
+    </div>
+  </div>
+</main>
 
-<!-- POPUP -->
+<!-- ФУТЕР С КОНТАКТАМИ И МАЛЕНЬКИМ ЛЕЖАЩИМ ПЕРСОНАЖЕМ -->
+<footer class="contacts">
+  <div class="contacts-text">
+    <p>📧 my@email.com</p>
+    <p>🐦 @my_twitter</p>
+    <p>🎨 discord: my_nick</p>
+  </div>
+  <div class="small-character">
+    <img src="https://via.placeholder.com/100x70/ffaa44/fff?text=lying" alt="Маленький персонаж">
+  </div>
+</footer>
+
+<!-- POPUP (увеличенное изображение работы) -->
 <div id="popup" class="popup" onclick="closePopup()">
   <div class="popup-content" onclick="event.stopPropagation()">
-    <img id="popup-img">
+    <img id="popup-img" alt="Деталь работы">
     <p id="popup-text"></p>
   </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+  // ----- БЕСКОНЕЧНАЯ КАРУСЕЛЬ (клонирование для зацикленного движения) -----
+  function initCarousel() {
+    const track = document.querySelector('.carousel-track');
+    if (!track) return;
+    const items = Array.from(track.children);
+    if (items.length === 0) return;
+    // клонируем оригинальные элементы 2 раза для плавной бесконечности
+    const cloneCount = 2;
+    for (let i = 0; i < cloneCount; i++) {
+      items.forEach(item => {
+        const clone = item.cloneNode(true);
+        track.appendChild(clone);
+      });
+    }
+  }
+
+  // ----- ФУНКЦИИ ПОПАПА -----
+  function openPopup(imgSrc, description) {
+    const popup = document.getElementById('popup');
+    const popupImg = document.getElementById('popup-img');
+    const popupText = document.getElementById('popup-text');
+    if (popupImg) popupImg.src = imgSrc;
+    if (popupText) popupText.innerText = description;
+    if (popup) popup.classList.add('show');
+    // небольшая блокировка скролла фона (опционально)
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    const popup = document.getElementById('popup');
+    if (popup) popup.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // закрытие по Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopup();
+  });
+
+  // при клике на карусель-элемент можно тоже открывать попап с описанием проекта (доп. функционал)
+  function bindCarouselItems() {
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    carouselItems.forEach((item, idx) => {
+      const imgEl = item.querySelector('img');
+      if (imgEl) {
+        // можно добавить кастомный текст в зависимости от проекта
+        const projectDescriptions = [
+          'Участие в анимационном сериале "Alpha" — создание ключевых кадров',
+          'Работа над VFX блокбастером: симуляция частиц и композитинг',
+          'Анимация кат-сцен для игры "Galactic Rush"',
+          'Короткометражка "Отражения" — анимация и пост-продакшн',
+          'Motion design проект для международного фестиваля',
+          '3D персонаж для рекламной интеграции'
+        ];
+        const desc = projectDescriptions[idx % projectDescriptions.length] || 'Мой вклад в проект';
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openPopup(imgEl.src, desc);
+        });
+      }
+    });
+  }
+
+  // запуск после загрузки DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+    bindCarouselItems();
+  });
+</script>
+
 </body>
 </html>
