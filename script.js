@@ -1,39 +1,77 @@
-// Бесконечная карусель (клонирование изображений)
-function initCarousel() {
-  const track = document.querySelector('.carousel-track');
-  if (!track) return;
-  const items = Array.from(track.children);
-  if (items.length === 0) return;
-  // Клонируем элементы для плавной бесконечности (2-3 раза)
-  const cloneCount = 2;
-  for (let i = 0; i < cloneCount; i++) {
-    items.forEach(item => {
-      const clone = item.cloneNode(true);
-      track.appendChild(clone);
+const $ = (s, root=document) => root.querySelector(s);
+const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+},{threshold:.12});
+
+$$('.reveal').forEach(el=>revealObserver.observe(el));
+
+const menu = $('.menu-btn');
+const nav = $('.nav');
+menu?.addEventListener('click',()=>{
+  nav.classList.toggle('open');
+});
+$$('.nav a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+const cursorDot = $('.cursor-dot');
+const cursorRing = $('.cursor-ring');
+if(cursorDot && cursorRing && matchMedia('(pointer:fine)').matches){
+  let mx=0,my=0,rx=0,ry=0;
+  window.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    cursorDot.style.left=mx+'px'; cursorDot.style.top=my+'px';
+  });
+  const loop=()=>{
+    rx += (mx-rx)*.15; ry += (my-ry)*.15;
+    cursorRing.style.left=rx+'px'; cursorRing.style.top=ry+'px';
+    requestAnimationFrame(loop);
+  };
+  loop();
+  $$('a,button,.project,.service').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cursorRing.style.width='48px';cursorRing.style.height='48px'});
+    el.addEventListener('mouseleave',()=>{cursorRing.style.width='34px';cursorRing.style.height='34px'});
+  });
+}
+
+if(matchMedia('(pointer:fine)').matches){
+  $$('.tilt').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5;
+      const y=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(900px) rotateX(${y*-3}deg) rotateY(${x*4}deg) translateY(-5px)`;
     });
+    card.addEventListener('mouseleave',()=>card.style.transform='');
+  });
+}
+
+const toast = $('#toast');
+function showToast(text){
+  toast.textContent=text;
+  toast.classList.add('show');
+  clearTimeout(showToast.t);
+  showToast.t=setTimeout(()=>toast.classList.remove('show'),2200);
+}
+$$('[data-placeholder]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    showToast(`${a.dataset.placeholder} ссылку нужно заменить`);
+  });
+});
+
+$('#moreProjects')?.addEventListener('click',()=>{
+  showToast('Здесь можно добавить следующую подборку проектов');
+});
+
+const heroArt=$('.hero-art');
+window.addEventListener('scroll',()=>{
+  if(heroArt && window.scrollY < innerHeight){
+    heroArt.style.transform=`translateY(${window.scrollY*.035}px)`;
   }
-}
-
-// Попап
-function openPopup(imgSrc, description) {
-  const popup = document.getElementById('popup');
-  const popupImg = document.getElementById('popup-img');
-  const popupText = document.getElementById('popup-text');
-  if (popupImg) popupImg.src = imgSrc;
-  if (popupText) popupText.innerText = description;
-  if (popup) popup.classList.add('show');
-}
-
-function closePopup() {
-  const popup = document.getElementById('popup');
-  if (popup) popup.classList.remove('show');
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closePopup();
-});
-
-// Запуск при загрузке
-document.addEventListener('DOMContentLoaded', () => {
-  initCarousel();
-});
+},{passive:true});
