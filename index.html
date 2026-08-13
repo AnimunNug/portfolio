@@ -1,215 +1,804 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#17142b">
-  <meta name="description" content="Minecraft portfolio — 3D modeling, mobs, items, environments and resource packs.">
-  <title>КИТА — Minecraft Artist Portfolio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animun4ik | Main Menu</title>
+    <!-- Пиксельный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- Three.js для 3D Скайбокса -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            /* Фоновая текстура грязи/камня для меню */
+            --dirt-bg: url('ui/dirt_bg.png');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'VT323', monospace;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #000;
+            /* Кастомный пиксельный курсор */
+            cursor: url('ui/cursor.png'), auto;
+        }
+
+        button {
+            background-color: transparent;
+            border: none;
+            outline: none;
+        }
+
+        /* Принудительный четкий пиксель-арт для всех картинок и спрайтов */
+        img, .mc-btn-img, .world-icon, .item-card img, .pixel-frame {
+            image-rendering: pixelated !important;
+            image-rendering: -moz-crisp-edges !important;
+            image-rendering: crisp-edges !important;
+        }
+
+        #skybox-container {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+        }
+
+        /* Текстура виньетки поверх скайбокса */
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('ui/vignette.png');
+            background-size: 100% 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.25s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ---------------- ЛОГОТИП И СПЛЭШ ---------------- */
+        .logo-container {
+            position: relative;
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: slowLogoEntrance 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, float 4s ease-in-out 2.5s infinite;
+        }
+
+        .logo-image {
+            width: 700px;
+            max-width: 90vw;
+            height: auto;
+        }
+
+        .logo-subtitle-img {
+            height: 48px;
+            width: auto;
+            margin-top: -40px; 
+            z-index: 2;         
+            opacity: 0;         
+            animation: fadeInSubtitle 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards; 
+        }
+
+        @keyframes fadeInSubtitle {
+            0% { opacity: 0; transform: translateY(12px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .splash-text {
+            position: absolute;
+            top: 70%;
+            right: -20px;
+            color: #FFFF00;
+            font-size: 2.8rem;
+            text-shadow: 4px 4px 0px #3F3F00;
+            transform: rotate(-15deg);
+            animation: pulseSplash 0.5s alternate infinite ease-in-out;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        @keyframes slowLogoEntrance {
+            0% { opacity: 0; transform: translateY(-80px) scale(0.92); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulseSplash {
+            from { transform: rotate(-15deg) scale(1); }
+            to { transform: rotate(-15deg) scale(1.1); }
+        }
+
+        /* ---------------- КНОПКИ (Увеличенные) ---------------- */
+        .mc-btn-img {
+            width: 100%;
+            height: 72px;
+            background-color: transparent;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            color: #e0e0e0;
+            font-size: 2.4rem;
+            text-shadow: 3px 3px 0px #202020;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.05s, filter 0.1s;
+        }
+
+        .mc-btn-img:hover { color: #ffffff; text-shadow: 3px 3px 0px #102060; }
+        .mc-btn-img:active { transform: translateY(3px); }
+        .mc-btn-img.disabled { cursor: not-allowed; pointer-events: none; }
+
+        #btn-1 { background-image: url('ui/button_1_normal.png'); }
+        #btn-1:hover { background-image: url('ui/button_1_hover.png'); }
+        #btn-1:active { background-image: url('ui/button_1_active.png'); }
+
+        #btn-2 { background-image: url('ui/button_2_normal.png'); }
+        #btn-2:hover { background-image: url('ui/button_2_hover.png'); }
+        #btn-2:active { background-image: url('ui/button_2_active.png'); }
+
+        #btn-3 { background-image: url('ui/button_3_normal.png'); }
+        #btn-3:hover { background-image: url('ui/button_3_hover.png'); }
+        #btn-3:active { background-image: url('ui/button_3_active.png'); }
+
+        #btn-4 { background-image: url('ui/button_4_normal.png'); }
+        #btn-4:hover { background-image: url('ui/button_4_hover.png'); }
+        #btn-4:active { background-image: url('ui/button_4_active.png'); }
+
+        #btn-5 { background-image: url('ui/button_5_normal.png'); }
+        #btn-5:hover { background-image: url('ui/button_5_hover.png'); }
+        #btn-5:active { background-image: url('ui/button_5_active.png'); }
+
+        #btn-6 { background-image: url('ui/button_6_normal.png'); }
+        #btn-6:hover { background-image: url('ui/button_6_hover.png'); }
+        #btn-6:active { background-image: url('ui/button_6_active.png'); }
+
+        #btn-9 { background-image: url('ui/button_9_normal.png'); }
+        #btn-9:hover { background-image: url('ui/button_9_hover.png'); }
+        #btn-9:active { background-image: url('ui/button_9_active.png'); }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 560px;
+            max-width: 90vw;
+            opacity: 0;
+            animation: fadeInButtons 1s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards;
+        }
+
+        .btn-row { display: flex; gap: 12px; width: 100%; }
+        .btn-row .mc-btn-img { flex: 1; }
+
+        @keyframes fadeInButtons {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .bottom-info-bar {
+            position: absolute;
+            bottom: 14px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            color: #ffffff;
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0px #000;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* ---------------- GUI ВЫБОРА МИРА - КАРУСЕЛЬ ---------------- */
+        #world-select-gui {
+            background-image: var(--dirt-bg);
+			image-rendering: pixelated;
+            background-size: 78px 78px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .world-header {
+            width: 100%;
+            background-image: url('ui/header_panel_bg.png');
+            background-size: 100% 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 18px 0;
+            z-index: 5;
+        }
+
+        .world-select-title {
+            font-size: 2.6rem;
+            color: #ffffff;
+            text-shadow: 3px 3px 0px #000;
+            margin-bottom: 5px;
+        }
+
+        /* Контейнер карусели */
+        .carousel-container {
+            width: 100%;
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Стрелки навигации (с картинками вместо псевдоэлементов) */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #555;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .nav-arrow img {
+            width: 70px;
+            height: 70px;
+            image-rendering: pixelated;
+        }
+
+        .left-arrow { left: 40px; }
+        .right-arrow { right: 40px; }
+        
+        .nav-arrow:hover { background-color: rgba(0, 0, 0, 0.8); border-color: #fff; transform: translateY(-50%) scale(1.1); }
+        .nav-arrow:active { transform: translateY(-50%) scale(0.9); }
+
+        /* Окно просмотра карусели */
+        .carousel-viewport {
+            width: 100%;
+            height: 340px;
+            position: relative;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        /* Ползунок с элементами */
+        .carousel-track {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            display: flex;
+            align-items: center;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d;
+        }
+
+        /* Карточка мира в карусели (Увеличенные изображения и карточки) */
+        .carousel-card {
+            flex: 0 0 220px; 
+            height: 270px;
+            margin: 0 15px;
+            background-image: url('ui/world_card_bg.png');
+            background-size: 100% 100%;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            
+            /* Дефолтное состояние (неактивное) */
+            opacity: 0.5;
+            filter: brightness(0.5);
+            transform: scale(0.75) translateZ(-100px);
+            user-select: none;
+        }
+
+        /* Активная центральная карточка */
+        .carousel-card.active {
+            opacity: 1;
+            filter: brightness(1);
+            transform: scale(1.15) translateZ(0);
+            background-image: url('ui/world_card_selected.png');
+            box-shadow: 0 30px 30px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        /* Соседние карточки */
+        .carousel-card.prev, .carousel-card.next {
+            opacity: 0.8;
+            filter: brightness(0.8);
+            z-index: 5;
+        }
+        
+        .carousel-card.prev { transform: scale(0.9) translateX(20px) translateZ(-50px) rotateY(15deg); }
+        .carousel-card.next { transform: scale(0.9) translateX(-20px) translateZ(-50px) rotateY(-15deg); }
+
+        .carousel-card .world-icon-wrapper {
+            width: 160px;
+            height: 160px;
+            background-image: url('ui/icon_frame.png');
+            background-size: 100% 100%;
+            padding: 6px;
+            pointer-events: none;
+        }
+
+        .carousel-card .world-icon {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        /* Текстовая информация под каруселью */
+        .carousel-info-panel {
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 20px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-title { font-size: 2.8rem; color: #ffffff; text-shadow: 3px 3px 0px #000; margin-bottom: 5px; }
+        .info-meta { font-size: 1.6rem; color: #aaaaaa; }
+        .info-desc { font-size: 1.4rem; color: #888888; margin-top: 5px; }
+
+        .world-footer {
+            width: 100%;
+            background-image: url('ui/footer_panel_bg.png');
+            background-size: 100% 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            z-index: 5;
+        }
+
+        .footer-btn-grid {
+            width: 780px;
+            max-width: 92vw;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* ---------------- CHEST GUI ---------------- */
+        #portfolio-gui { background: rgba(0,0,0,0.6); }
+
+        .chest-window {
+            background-image: url('ui/chest_gui_bg.png');
+            background-size: 100% 100%;
+            width: 980px;
+            max-width: 92vw;
+            height: 72vh;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .chest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .chest-title { font-size: 2.3rem; color: #373737; }
+
+        .pixel-close-btn {
+            width: 36px; height: 36px;
+            background-image: url('ui/close_btn_normal.png');
+            background-size: 100% 100%;
+            cursor: pointer;
+        }
+        .pixel-close-btn:hover { background-image: url('ui/close_btn_hover.png'); }
+        .pixel-close-btn:active { background-image: url('ui/close_btn_active.png'); }
+
+        .inventory-grid {
+            background-image: url('ui/inventory_grid_bg.png');
+            background-size: 100% 100%;
+            flex-grow: 1;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            overflow-y: auto;
+        }
+
+        .item-card {
+            background-image: url('ui/item_slot_bg.png');
+            background-size: 100% 100%;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.08s;
+        }
+        .item-card:hover { transform: scale(1.02); }
+        .item-card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background-image: url('ui/image_preview_frame.png');
+            background-size: 100% 100%;
+            padding: 2px;
+        }
+        .item-card h4 { font-size: 1.5rem; color: #373737; margin-top: 6px; }
+        .item-card p { font-size: 1.1rem; color: #555; }
+
+        ::-webkit-scrollbar { width: 16px; }
+        ::-webkit-scrollbar-track { background-image: url('ui/scrollbar_track.png'); background-size: 100% 100%; }
+        ::-webkit-scrollbar-thumb { background-image: url('ui/scrollbar_thumb.png'); background-size: 100% 100%; }
+    </style>
 </head>
 <body>
-  <div class="noise"></div>
-  <div class="cursor-dot"></div>
-  <div class="cursor-ring"></div>
 
-  <header class="topbar">
-    <a class="brand" href="#home" aria-label="Главная">
-      <span class="brand-cube"><i></i><b></b><em></em></span>
-      <span>KITA<span class="brand-dot">.</span></span>
-    </a>
+    <!-- 1. Скайбокс на фоне -->
+    <div id="skybox-container"></div>
+    <div class="vignette"></div>
 
-    <nav class="nav">
-      <a href="#work">Работы</a>
-      <a href="#about">Обо мне</a>
-      <a href="#services">Навыки</a>
-      <a href="#contact">Контакты</a>
-    </nav>
-
-    <a class="hire-btn" href="#contact"><span>Нанять меня</span><span class="arrow">↗</span></a>
-    <button class="menu-btn" aria-label="Открыть меню"><span></span><span></span></button>
-  </header>
-
-  <main>
-    <section class="hero section" id="home">
-      <div class="hero-copy reveal">
-        <div class="eyebrow"><span class="pulse"></span> MINECRAFT 3D ARTIST / DESIGNER</div>
-        <h1>Я превращаю<br><span>кубики</span> в миры.</h1>
-        <p class="hero-text">
-          3D-модели, существа, предметы и окружение для Minecraft.
-          Фантазия — в дизайне, аккуратность — в каждом пикселе.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="#work">Смотреть работы <b>↓</b></a>
-          <a class="button ghost" href="#contact">Обсудить проект <b>↗</b></a>
+    <!-- 2. Главное меню -->
+    <div class="ui-layer" id="main-menu">
+        <div class="logo-container">
+            <img src="ui/logo.png" alt="Animun4ik Logo" class="logo-image">
+            <img src="ui/logo_subtitle.png" alt="MC ARTIST" class="logo-subtitle-img">
+            <div class="splash-text" id="splash"></div>
         </div>
-        <div class="hero-meta">
-          <div><strong>6+</strong><span>лет в Minecraft</span></div>
-          <div><strong>1000+</strong><span>моделей создано</span></div>
-          <div><strong>∞</strong><span>идей впереди</span></div>
-        </div>
-      </div>
 
-      <div class="hero-art reveal delay-1">
-        <div class="sticker sticker-star">✦</div>
-        <div class="sticker sticker-wow">WOW!</div>
-        <div class="sticker sticker-cube">◆</div>
-        <div class="blob"></div>
-        <div class="display-card">
-          <div class="card-top"><span>PROJECT_01</span><span>● ● ●</span></div>
-          <div class="minecraft-scene">
-            <div class="sky"></div>
-            <div class="cloud cloud-a"></div><div class="cloud cloud-b"></div>
-            <div class="mountain m1"></div><div class="mountain m2"></div>
-            <div class="grass"></div>
-            <div class="tree tree-a"><i></i><b></b></div>
-            <div class="tree tree-b"><i></i><b></b></div>
-            <div class="character">
-              <div class="char-head"></div>
-              <div class="char-body"></div>
-              <div class="char-arm left"></div>
-              <div class="char-arm right"></div>
-              <div class="char-leg left"></div>
-              <div class="char-leg right"></div>
-            </div>
-            <div class="floating-pixel p1"></div><div class="floating-pixel p2"></div><div class="floating-pixel p3"></div>
-          </div>
-          <div class="card-bottom"><span>3D / CHARACTER</span><b>01</b></div>
+        <div class="button-group">
+            <button id="btn-1" class="mc-btn-img" onclick="playUiSound('click'); openWorldSelect();"></button>
+            <button id="btn-2" class="mc-btn-img" onclick="playUiSound('click'); openGUI('about');"></button>
+            <button id="btn-3" class="mc-btn-img" onclick="playUiSound('click'); openGUI('contacts');"></button>
         </div>
-        <div class="mini-card mini-a"><span>✦</span><strong>PIXEL<br>PERFECT</strong></div>
-        <div class="mini-card mini-b"><strong>BLOCK<br>WORLD</strong><span>↗</span></div>
-      </div>
-    </section>
 
-    <div class="ticker" aria-hidden="true">
-      <div class="ticker-track">
-        <span>3D MODELING</span><i>✦</i><span>MINECRAFT</span><i>◆</i><span>TEXTURES</span><i>✦</i><span>CREATURES</span><i>◆</i><span>ENVIRONMENT</span><i>✦</i>
-        <span>3D MODELING</span><i>✦</i><span>MINECRAFT</span><i>◆</i><span>TEXTURES</span><i>✦</i><span>CREATURES</span><i>◆</i><span>ENVIRONMENT</span><i>✦</i>
-      </div>
+        <div class="bottom-info-bar">
+            <span>Animun4ik v1.0 (Minecraft 1.20.4)</span>
+            <span>Copyright Animun4ik. Do not distribute!</span>
+        </div>
     </div>
 
-    <section class="work section" id="work">
-      <div class="section-heading reveal">
-        <div>
-          <span class="eyebrow">SELECTED WORKS / 2020—2026</span>
-          <h2>Мои <span>любимые</span><br>кубики.</h2>
+    <!-- 3. Окно «Выберите мир» (Обновленная Карусель без поиска и лишних кнопок) -->
+    <div class="ui-layer hidden" id="world-select-gui">
+        <div class="world-header">
+            <div class="world-select-title">Выберите мир</div>
         </div>
-        <p>Небольшая подборка проектов. Наведи курсор — карточки оживают.</p>
-      </div>
-
-      <div class="project-grid">
-        <article class="project project-large reveal tilt" data-color="purple">
-          <div class="project-visual visual-dragon">
-            <div class="project-number">01</div>
-            <div class="dragon">
-              <div class="dragon-head"></div><div class="dragon-body"></div>
-              <div class="dragon-wing one"></div><div class="dragon-wing two"></div>
-              <div class="dragon-tail"></div><div class="fire"></div>
+        
+        <div class="carousel-container">
+            <button class="nav-arrow left-arrow" onclick="playUiSound('click'); prevCarouselItem();">
+                <img src="ui/arrow_left.png" alt="Prev">
+            </button>
+            <div class="carousel-viewport">
+                <div class="carousel-track" id="carousel-track">
+                    <!-- Карточки будут сгенерированы через JavaScript -->
+                </div>
             </div>
-            <span class="visual-label">FIRE DRAGON</span>
-          </div>
-          <div class="project-info"><div><h3>Огненный дракон</h3><p>Creature / Rig / Animation</p></div><span>↗</span></div>
-        </article>
-
-        <article class="project reveal tilt" data-color="yellow">
-          <div class="project-visual visual-item">
-            <div class="project-number">02</div>
-            <div class="sword"><i></i><b></b><em></em></div>
-            <span class="visual-label">ITEM DESIGN</span>
-          </div>
-          <div class="project-info"><div><h3>Остролуния</h3><p>Fantasy / Item / Texture</p></div><span>↗</span></div>
-        </article>
-
-        <article class="project reveal tilt" data-color="blue">
-          <div class="project-visual visual-world">
-            <div class="project-number">03</div>
-            <div class="island"></div>
-            <div class="castle"><i></i><b></b><em></em></div>
-            <span class="visual-label">WORLD BUILDING</span>
-          </div>
-          <div class="project-info"><div><h3>Лунария</h3><p>Environment / Props / Style</p></div><span>↗</span></div>
-        </article>
-
-        <article class="project project-wide reveal tilt" data-color="green">
-          <div class="project-visual visual-mob">
-            <div class="project-number">04</div>
-            <div class="slime"><i></i><b></b><em></em></div>
-            <div class="grass-platform"></div>
-            <span class="visual-label">MOB / ANIMATION</span>
-          </div>
-          <div class="project-info"><div><h3>Маленький монстр</h3><p>Character design / Animation / Bedrock</p></div><span>↗</span></div>
-        </article>
-      </div>
-
-      <button class="more-btn" id="moreProjects">Показать ещё <span>+</span></button>
-    </section>
-
-    <section class="about section" id="about">
-      <div class="about-card reveal">
-        <div class="about-stamp">MADE<br>WITH<br>BLOCKS</div>
-        <span class="eyebrow">ABOUT THE ARTIST</span>
-        <h2>Не просто<br><span>моделю.</span></h2>
-        <p>
-          Я люблю находить характер даже в нескольких кубиках.
-          Работаю с моделями Minecraft, текстурами, анимациями и
-          окружением — от маленького предмета до целого фантастического мира.
-        </p>
-        <p>
-          Моя цель — чтобы ассет выглядел так, будто всегда существовал
-          внутри игры, но при этом его хотелось рассматривать.
-        </p>
-        <a class="text-link" href="#contact">Давай что-нибудь построим <span>→</span></a>
-      </div>
-      <div class="about-facts reveal delay-1">
-        <div class="fact fact-big"><span>01</span><strong>Форма</strong><p>Чистый силуэт и читаемость с первого взгляда.</p></div>
-        <div class="fact"><span>02</span><strong>Стиль</strong><p>Свой визуальный язык для каждого проекта.</p></div>
-        <div class="fact"><span>03</span><strong>Детали</strong><p>Маленькие вещи, которые делают модель живой.</p></div>
-      </div>
-    </section>
-
-    <section class="services section" id="services">
-      <div class="section-heading reveal">
-        <div><span class="eyebrow">WHAT I DO</span><h2>Кубики —<br><span>моя стихия.</span></h2></div>
-        <p>От идеи и концепта до готового ассета, который можно положить в игру.</p>
-      </div>
-      <div class="service-list">
-        <div class="service reveal"><span class="service-icon">◈</span><div><span>01 / MODELING</span><h3>3D-моделирование</h3><p>Предметы, персонажи, мобы, блоки и props для Java / Bedrock.</p></div><b>↗</b></div>
-        <div class="service reveal"><span class="service-icon">▦</span><div><span>02 / TEXTURE</span><h3>Текстуры и материалы</h3><p>Pixel art, стилизованные текстуры, UV и визуальные вариации.</p></div><b>↗</b></div>
-        <div class="service reveal"><span class="service-icon">✧</span><div><span>03 / ANIMATION</span><h3>Риг и анимация</h3><p>Живые idle, attack, walk и специальные анимации для существ.</p></div><b>↗</b></div>
-        <div class="service reveal"><span class="service-icon">◆</span><div><span>04 / WORLD</span><h3>Окружение и стиль</h3><p>Архитектура, props, локации и цельные визуальные направления.</p></div><b>↗</b></div>
-      </div>
-    </section>
-
-    <section class="contact section" id="contact">
-      <div class="contact-inner reveal">
-        <div class="contact-copy">
-          <span class="eyebrow">HAVE A PROJECT?</span>
-          <h2>Давай создадим<br><span>что-то странное.</span></h2>
-          <p>Есть сервер, мод, аддон или мир, которому не хватает характера? Расскажи о задумке.</p>
-          <div class="contact-links">
-            <a href="mailto:hello@example.com">hello@example.com <span>↗</span></a>
-            <a href="#" data-placeholder="Discord">Discord <span>↗</span></a>
-          </div>
+            <button class="nav-arrow right-arrow" onclick="playUiSound('click'); nextCarouselItem();">
+                <img src="ui/arrow_right.png" alt="Next">
+            </button>
         </div>
-        <div class="contact-doodle">
-          <div class="speech">LET'S<br>BUILD!</div>
-          <div class="big-cube"><i></i><b></b><em></em></div>
-          <div class="spark s1">✦</div><div class="spark s2">✦</div><div class="spark s3">◆</div>
+
+        <div class="carousel-info-panel" id="carousel-info-panel">
+            <!-- Динамическая информация о выбранном мире -->
         </div>
-      </div>
-    </section>
-  </main>
 
-  <footer>
-    <span>© 2026 KITA / MINECRAFT ARTIST</span>
-    <span>BUILT WITH <b>♥</b> & BLOCKS</span>
-    <a href="#home">НАВЕРХ ↑</a>
-  </footer>
+        <div class="world-footer">
+            <div class="footer-btn-grid">
+                <div class="btn-row">
+                    <button id="btn-4" class="mc-btn-img" onclick="playUiSound('click'); playSelectedWorld();">Играть в выбранном мире</button>
+                    <button id="btn-5" class="mc-btn-img" onclick="playUiSound('click'); alert('Создание нового проекта...');">Создать новый мир</button>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-6" class="mc-btn-img" onclick="playUiSound('click'); playSelectedWorld();">Изменить</button>
+                    <button id="btn-9" class="mc-btn-img" onclick="playUiSound('click'); closeGUI();">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <div class="toast" id="toast">Ссылка пока не настроена</div>
-  <script src="script.js"></script>
+    <!-- 4. Окно сундука -->
+    <div class="ui-layer hidden" id="portfolio-gui">
+        <div class="chest-window">
+            <div class="chest-header">
+                <div class="chest-title" id="chest-title">Большой сундук</div>
+                <button class="pixel-close-btn" onclick="playUiSound('click'); closeGUI();"></button>
+            </div>
+            <div class="inventory-grid" id="inventory-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ЗВУКИ МЕНЮ
+        // ==========================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playUiSound(type) {
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'hover') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('mc-btn-img') || e.target.classList.contains('carousel-card') || e.target.classList.contains('pixel-close-btn') || e.target.classList.contains('nav-arrow') || e.target.closest('.nav-arrow')) {
+                playUiSound('hover');
+            }
+        });
+
+        // ==========================================
+        // БАЗА ДАННЫХ И ЛОГИКА
+        // ==========================================
+        const projectWorlds = [
+            { id: "swords", name: "Текстуры Оружия", meta: "3D_Swords (07/08/2026, 9:15 pm)", details: "Творческий режим, Версия: 1.20.4", img: "ui/icons/swords_icon.png", desc: "Детализированные 3D модели мечей и инструментов." },
+            { id: "dragon", name: "Модель Дракона", meta: "Custom_Boss_Dragon (15/06/2026, 6:40 pm)", details: "Творческий режим, Версия: Blockbench", img: "ui/icons/dragon_icon.png", desc: "Кастомная модель босса с уникальными анимациями." },
+            { id: "anim", name: "Пак Анимаций", meta: "Player_Animations (02/04/2026, 1:00 pm)", details: "Выживание, Версия: GeckoLib", img: "ui/icons/anim_icon.png", desc: "Анимации боя, бега и взаимодействия." },
+            { id: "concepts", name: "Концепт Арты", meta: "Art_Collection (20/01/2026, 9:15 am)", details: "Хардкор, Версия: PixelArt", img: "ui/icons/art_icon.png", desc: "Галерея пиксельных концепт-артов." },
+            { id: "gui", name: "Кастомный UI", meta: "Custom_GUI_Pack (10/11/2025, 2:22 pm)", details: "Творческий режим, Версия: Vanilla", img: "ui/icons/gui_icon.png", desc: "Интерфейсы сундуков, верстаков и меню." }
+        ];
+
+        const database = {
+            about: [
+                { title: "Мой опыт", img: "ui/portfolio/exp_icon.png", desc: "Делаю круто." },
+                { title: "Софт", img: "ui/portfolio/soft_icon.png", desc: "Blockbench, Photoshop, Aseprite" }
+            ],
+            contacts: [
+                { title: "Discord", img: "ui/portfolio/discord_icon.png", desc: "@animun4ik" },
+                { title: "Modrinth", img: "ui/portfolio/modrinth_icon.png", desc: "Мои паки" }
+            ]
+        };
+
+        const titles = { about: "Сундук: Инвентарь навыков", contacts: "Сундук: Почтовый ящик" };
+        const splashes = ["100% Custom!", "Better than Vanilla!", "Blockbench Master!", "Pixels Perfect!", "Needs More Diamonds!", "CIT Powered!"];
+        
+        document.getElementById('splash').innerText = splashes[Math.floor(Math.random() * splashes.length)];
+        
+        // --- ЛОГИКА КАРУСЕЛИ ---
+        let selectedWorldIndex = 0;
+        let currentCarouselIndex = 0;
+
+        function openWorldSelect() {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('world-select-gui').classList.remove('hidden');
+            
+            currentCarouselIndex = 0;
+            renderWorldsCarousel();
+            document.addEventListener('keydown', carouselKeyHandler);
+        }
+
+        function closeGUI() {
+            document.getElementById('portfolio-gui').classList.add('hidden');
+            document.getElementById('world-select-gui').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
+            document.removeEventListener('keydown', carouselKeyHandler);
+        }
+
+        // Обработчик клавиш клавиатуры
+        function carouselKeyHandler(e) {
+            if (document.getElementById('world-select-gui').classList.contains('hidden')) return;
+
+            if (e.key === 'ArrowRight') {
+                playUiSound('hover');
+                nextCarouselItem();
+            } else if (e.key === 'ArrowLeft') {
+                playUiSound('hover');
+                prevCarouselItem();
+            } else if (e.key === 'Enter') {
+                playUiSound('click');
+                playSelectedWorld();
+            }
+        }
+
+        function renderWorldsCarousel() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = '';
+
+            if (projectWorlds.length === 0) {
+                track.innerHTML = '<div style="color:white; font-size: 2.2rem; text-shadow: 2px 2px #000;">Проекты не найдены</div>';
+                updateCarouselInfo(null);
+                return;
+            }
+
+            projectWorlds.forEach((world, index) => {
+                track.innerHTML += `
+                    <div class="carousel-card" onclick="selectCarouselItem(${index})" ondblclick="playUiSound('click'); playSelectedWorld();">
+                        <div class="world-icon-wrapper">
+                            <img src="${world.img}" alt="${world.name}" class="world-icon">
+                        </div>
+                    </div>
+                `;
+            });
+
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            if (projectWorlds.length === 0) return;
+
+            const cards = document.querySelectorAll('.carousel-card');
+            const track = document.getElementById('carousel-track');
+            
+            // Расчет сдвига для увеличенных карт: ширина карты (220) + margin (15*2) = 250
+            const itemWidth = 250; 
+
+            cards.forEach((card, index) => {
+                card.className = 'carousel-card';
+                
+                if (index === currentCarouselIndex) {
+                    card.classList.add('active');
+                } else if (index === currentCarouselIndex - 1) {
+                    card.classList.add('prev');
+                } else if (index === currentCarouselIndex + 1) {
+                    card.classList.add('next');
+                }
+            });
+
+            const offset = -((currentCarouselIndex * itemWidth) + (itemWidth / 2));
+            track.style.transform = `translateX(${offset}px) translateY(-50%)`;
+
+            updateCarouselInfo(projectWorlds[currentCarouselIndex]);
+        }
+
+        function selectCarouselItem(index) {
+            if (index === currentCarouselIndex) return;
+            currentCarouselIndex = index;
+            playUiSound('hover');
+            updateCarousel();
+        }
+
+        function nextCarouselItem() {
+            if (currentCarouselIndex < projectWorlds.length - 1) {
+                currentCarouselIndex++;
+                updateCarousel();
+            }
+        }
+
+        function prevCarouselItem() {
+            if (currentCarouselIndex > 0) {
+                currentCarouselIndex--;
+                updateCarousel();
+            }
+        }
+
+        function updateCarouselInfo(world) {
+            const panel = document.getElementById('carousel-info-panel');
+            if (!world) {
+                panel.innerHTML = '';
+                return;
+            }
+            
+            panel.innerHTML = `
+                <div class="info-title">${world.name}</div>
+                <div class="info-meta">${world.meta}</div>
+                <div class="info-desc">${world.details} — ${world.desc}</div>
+            `;
+            
+            selectedWorldIndex = projectWorlds.indexOf(world); 
+        }
+
+        function playSelectedWorld() {
+            const world = projectWorlds[selectedWorldIndex];
+            if(world) alert(`Загрузка проекта: "${world.name}"...\n\nОписание: ${world.desc}`);
+        }
+
+        function openGUI(section) {
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('portfolio-gui').classList.remove('hidden');
+            document.getElementById('chest-title').innerText = titles[section];
+            const content = document.getElementById('inventory-content');
+            content.innerHTML = '';
+            database[section].forEach(item => {
+                content.innerHTML += `
+                    <div class="item-card">
+                        <img src="${item.itemImg || item.img}" alt="${item.title}">
+                        <h4>${item.title}</h4>
+                        ${item.desc ? `<p>${item.desc}</p>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        // ==========================================
+        // 3D СКАЙБОКС ИЗ ТЕКСТУР-ФАЙЛОВ
+        // ==========================================
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('skybox-container').appendChild(renderer.domElement);
+
+        const textureLoader = new THREE.TextureLoader();
+        
+        function loadSkyTexture(path) {
+            const tex = textureLoader.load(path);
+            tex.magFilter = THREE.NearestFilter;
+            tex.minFilter = THREE.NearestFilter;
+            return tex;
+        }
+
+        const skyMaterials = [
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_top.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_bottom.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side.png'), side: THREE.BackSide })
+        ];
+        
+        const skyboxGeo = new THREE.BoxGeometry(900, 900, 900);
+        const skybox = new THREE.Mesh(skyboxGeo, skyMaterials);
+        scene.add(skybox);
+
+        let lon = 0, lat = 0, phi = 0, theta = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            lon += 0.05; 
+            lat = Math.max(-85, Math.min(85, lat));
+            phi = THREE.MathUtils.degToRad(90 - lat);
+            theta = THREE.MathUtils.degToRad(lon);
+            
+            camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
+            camera.position.y = 100 * Math.cos(phi);
+            camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
-                    </html>
+</html>
