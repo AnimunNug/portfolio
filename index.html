@@ -4,29 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animun4ik | Main Menu</title>
-    <!-- Пиксельный шрифт -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <!-- Three.js для 3D Скайбокса -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            /* Фоновая текстура грязи/камня для меню */
-            --dirt-bg: url('ui/dirt_bg.png');
+            var(--dirt-bg): url('ui/dirt_bg.png');
         }
 
-        * {
+        /* Полное отключение фильтрации пикселей для всех элементов */
+        *, *::before, *::after, img, canvas, .mc-btn-img, .mc-btn-img-mini, .world-image, .world-frame, .pixel-frame, .about-btn-slot {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             user-select: none;
             font-family: 'VT323', monospace;
+            image-rendering: pixelated !important;
+            image-rendering: -moz-crisp-edges !important;
+            image-rendering: crisp-edges !important;
         }
 
         body {
             overflow: hidden;
             background-color: #000;
-            /* Кастомный пиксельный курсор */
             cursor: url('ui/cursor.png'), auto;
         }
 
@@ -36,20 +36,12 @@
             outline: none;
         }
 
-        /* Принудительный четкий пиксель-арт для всех картинок и спрайтов */
-        img, .mc-btn-img, .world-icon, .item-card img, .pixel-frame {
-            image-rendering: pixelated !important;
-            image-rendering: -moz-crisp-edges !important;
-            image-rendering: crisp-edges !important;
-        }
-
         #skybox-container {
             position: absolute;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 1;
         }
 
-        /* Текстура виньетки поверх скайбокса */
         .vignette {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -86,18 +78,9 @@
             animation: slowLogoEntrance 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, float 4s ease-in-out 2.5s infinite;
         }
 
-        .logo-image {
-            width: 700px;
-            max-width: 90vw;
-            height: auto;
-        }
-
+        .logo-image { width: 700px; max-width: 90vw; height: auto; }
         .logo-subtitle-img {
-            height: 48px;
-            width: auto;
-            margin-top: -40px; 
-            z-index: 2;         
-            opacity: 0;         
+            height: 48px; width: auto; margin-top: -40px; z-index: 2; opacity: 0;         
             animation: fadeInSubtitle 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards; 
         }
 
@@ -105,55 +88,44 @@
             0% { opacity: 0; transform: translateY(12px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        .splash-text {
-            position: absolute;
-            top: 70%;
-            right: -20px;
-            color: #FFFF00;
-            font-size: 2.8rem;
-            text-shadow: 4px 4px 0px #3F3F00;
-            transform: rotate(-15deg);
-            animation: pulseSplash 0.5s alternate infinite ease-in-out;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
         @keyframes slowLogoEntrance {
             0% { opacity: 0; transform: translateY(-80px) scale(0.92); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-
         @keyframes pulseSplash {
             from { transform: rotate(-15deg) scale(1); }
             to { transform: rotate(-15deg) scale(1.1); }
         }
 
-        /* ---------------- КНОПКИ (Увеличенные) ---------------- */
+        .splash-text {
+            position: absolute; top: 70%; right: -20px;
+            color: #FFFF00; font-size: 2.8rem; text-shadow: 4px 4px 0px #3F3F00;
+            transform: rotate(-15deg);
+            animation: pulseSplash 0.5s alternate infinite ease-in-out;
+            white-space: nowrap; pointer-events: none;
+        }
+
+        /* ---------------- КНОПКИ ---------------- */
         .mc-btn-img {
-            width: 100%;
-            height: 72px;
-            background-color: transparent;
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            color: #e0e0e0;
-            font-size: 2.4rem;
-            text-shadow: 3px 3px 0px #202020;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; height: 72px;
+            background-color: transparent; background-size: 100% 100%; background-repeat: no-repeat;
+            color: #e0e0e0; font-size: 2.4rem; text-shadow: 3px 3px 0px #202020;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.05s, filter 0.1s;
+        }
+        .mc-btn-img-mini {
+            width: 396px; height: 64px;
+            background-color: transparent; background-size: 100% 100%; background-repeat: no-repeat;
+            color: #e0e0e0; font-size: 2.4rem; text-shadow: 3px 3px 0px #202020;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
             transition: transform 0.05s, filter 0.1s;
         }
 
-        .mc-btn-img:hover { color: #ffffff; text-shadow: 3px 3px 0px #102060; }
-        .mc-btn-img:active { transform: translateY(3px); }
-        .mc-btn-img.disabled { cursor: not-allowed; pointer-events: none; }
+        .mc-btn-img:hover, .mc-btn-img-mini:hover { color: #ffffff; text-shadow: 3px 3px 0px #102060; }
 
         #btn-1 { background-image: url('ui/button_1_normal.png'); }
         #btn-1:hover { background-image: url('ui/button_1_hover.png'); }
@@ -174,22 +146,24 @@
         #btn-5 { background-image: url('ui/button_5_normal.png'); }
         #btn-5:hover { background-image: url('ui/button_5_hover.png'); }
         #btn-5:active { background-image: url('ui/button_5_active.png'); }
+        #btn-5.broke { background-image: url('ui/button_5_broke.png'); cursor: default; }
+        #btn-5.broke:hover { background-image: url('ui/button_5_broke.png'); }
+        #btn-5.broke:active { background-image: url('ui/button_5_broke.png'); }
 
         #btn-6 { background-image: url('ui/button_6_normal.png'); }
         #btn-6:hover { background-image: url('ui/button_6_hover.png'); }
         #btn-6:active { background-image: url('ui/button_6_active.png'); }
+        #btn-6.broke { background-image: url('ui/button_6_broke.png'); cursor: default; }
+        #btn-6.broke:hover { background-image: url('ui/button_6_broke.png'); }
+        #btn-6.broke:active { background-image: url('ui/button_6_broke.png'); }
 
         #btn-9 { background-image: url('ui/button_9_normal.png'); }
         #btn-9:hover { background-image: url('ui/button_9_hover.png'); }
         #btn-9:active { background-image: url('ui/button_9_active.png'); }
 
         .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            width: 560px;
-            max-width: 90vw;
-            opacity: 0;
+            display: flex; flex-direction: column; gap: 16px;
+            width: 560px; max-width: 90vw; opacity: 0;
             animation: fadeInButtons 1s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards;
         }
 
@@ -198,28 +172,27 @@
 
         @keyframes fadeInButtons {
             0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 1; transform: translateY(0px); }
         }
 
         .bottom-info-bar {
-            position: absolute;
-            bottom: 14px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            color: #ffffff;
-            font-size: 1.4rem;
-            text-shadow: 2px 2px 0px #000;
-            z-index: 10;
-            pointer-events: none;
+            position: absolute; bottom: 14px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between;
+            color: #ffffff; font-size: 1.4rem; text-shadow: 2px 2px 0px #000;
+            z-index: 10; pointer-events: none;
+        }
+		
+        .world-select-title-img {
+            height: 40px; 
+            width: auto;
         }
 
-        /* ---------------- GUI ВЫБОРА МИРА - КАРУСЕЛЬ ---------------- */
+        /* ---------------- GUI ВЫБОРА МИРА ---------------- */
         #world-select-gui {
-            background-image: var(--dirt-bg);
-			image-rendering: pixelated;
-            background-size: 78px 78px;
+            background-image: url('ui/shadow_ui.png'), url('ui/shadow_ui.png'), url('ui/dirt_bg.png'); 
+            background-size: 100% 619px, 100% 100%, 78px 78px;
+            background-repeat: no-repeat, no-repeat, repeat;	
+            background-position: center 110px, center, top left;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -228,23 +201,13 @@
 
         .world-header {
             width: 100%;
-            background-image: url('ui/header_panel_bg.png');
-            background-size: 100% 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 18px 0;
+            padding: 30px 0 0 0;
             z-index: 5;
         }
 
-        .world-select-title {
-            font-size: 2.6rem;
-            color: #ffffff;
-            text-shadow: 3px 3px 0px #000;
-            margin-bottom: 5px;
-        }
-
-        /* Контейнер карусели */
         .carousel-container {
             width: 100%;
             flex-grow: 1;
@@ -255,222 +218,299 @@
             overflow: hidden;
         }
 
-        /* Стрелки навигации (с картинками вместо псевдоэлементов) */
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 52px;
-            height: 52px;
-            background-color: rgba(0, 0, 0, 0.6);
-            border: 2px solid #555;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-        }
-
-        .nav-arrow img {
-            width: 70px;
-            height: 70px;
-            image-rendering: pixelated;
-        }
-
-        .left-arrow { left: 40px; }
-        .right-arrow { right: 40px; }
-        
-        .nav-arrow:hover { background-color: rgba(0, 0, 0, 0.8); border-color: #fff; transform: translateY(-50%) scale(1.1); }
-        .nav-arrow:active { transform: translateY(-50%) scale(0.9); }
-
-        /* Окно просмотра карусели */
-        .carousel-viewport {
-            width: 100%;
-            height: 340px;
-            position: relative;
-            perspective: 1200px;
-            overflow: hidden;
-        }
-
-        /* Ползунок с элементами */
         .carousel-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-card {
             position: absolute;
             left: 50%;
             top: 50%;
-            display: flex;
-            align-items: center;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            transform-style: preserve-3d;
-        }
-
-        /* Карточка мира в карусели (Увеличенные изображения и карточки) */
-        .carousel-card {
-            flex: 0 0 220px; 
-            height: 270px;
-            margin: 0 15px;
-            background-image: url('ui/world_card_bg.png');
-            background-size: 100% 100%;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            width: 500px;
+            height: 420px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            
-            /* Дефолтное состояние (неактивное) */
-            opacity: 0.5;
-            filter: brightness(0.5);
-            transform: scale(0.75) translateZ(-100px);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s, opacity 0.4s;
+            transform-origin: center center;
             user-select: none;
         }
 
-        /* Активная центральная карточка */
-        .carousel-card.active {
-            opacity: 1;
-            filter: brightness(1);
-            transform: scale(1.15) translateZ(0);
-            background-image: url('ui/world_card_selected.png');
-            box-shadow: 0 30px 30px rgba(0,0,0,0.6);
-            z-index: 10;
-        }
-
-        /* Соседние карточки */
-        .carousel-card.prev, .carousel-card.next {
-            opacity: 0.8;
-            filter: brightness(0.8);
-            z-index: 5;
-        }
-        
-        .carousel-card.prev { transform: scale(0.9) translateX(20px) translateZ(-50px) rotateY(15deg); }
-        .carousel-card.next { transform: scale(0.9) translateX(-20px) translateZ(-50px) rotateY(-15deg); }
-
-        .carousel-card .world-icon-wrapper {
-            width: 160px;
-            height: 160px;
-            background-image: url('ui/icon_frame.png');
-            background-size: 100% 100%;
-            padding: 6px;
-            pointer-events: none;
-        }
-
-        .carousel-card .world-icon {
-            width: 100%; height: 100%;
+        .world-image {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 1;
+        }
+
+        .world-frame {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('ui/frame.png');
+            background-size: 100% 100%;
+            z-index: 2;
             pointer-events: none;
         }
-
-        /* Текстовая информация под каруселью */
-        .carousel-info-panel {
-            text-align: center;
-            padding: 0 20px;
-            margin-bottom: 20px;
-            height: 90px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .info-title { font-size: 2.8rem; color: #ffffff; text-shadow: 3px 3px 0px #000; margin-bottom: 5px; }
-        .info-meta { font-size: 1.6rem; color: #aaaaaa; }
-        .info-desc { font-size: 1.4rem; color: #888888; margin-top: 5px; }
 
         .world-footer {
-            width: 100%;
-            background-image: url('ui/footer_panel_bg.png');
-            background-size: 100% 100%;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            padding: 16px 0;
+            justify-content: center;
+            gap: 20px;
+            padding-bottom: 40px;
+            width: 100%;
             z-index: 5;
         }
+
+        /* ---------------- СТРЕЛКИ НАВИГАЦИИ ---------------- */
+        .nav-arrow {
+            width: 78px; height: 78px;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            border: none;
+            transition: none;
+        }
+
+        .left-arrow { background-image: url('ui/arrow_left_normal.png'); }
+        .left-arrow:hover { background-image: url('ui/arrow_left_hover.png'); }
+        .left-arrow:active { background-image: url('ui/arrow_left_active.png'); }
+        .left-arrow.deactive { background-image: url('ui/arrow_left_deactive.png'); cursor: default; }
+        .left-arrow.deactive:hover { background-image: url('ui/arrow_left_deactive.png'); }
+        .left-arrow.deactive:active { background-image: url('ui/arrow_left_deactive.png'); }
+
+        .right-arrow { background-image: url('ui/arrow_right_normal.png'); }
+        .right-arrow:hover { background-image: url('ui/arrow_right_hover.png'); }
+        .right-arrow:active { background-image: url('ui/arrow_right_active.png'); }
+        .right-arrow.deactive { background-image: url('ui/arrow_right_deactive.png'); cursor: default; }
+        .right-arrow.deactive:hover { background-image: url('ui/arrow_right_deactive.png'); }
+        .right-arrow.deactive:active { background-image: url('ui/arrow_right_deactive.png'); }
 
         .footer-btn-grid {
             width: 780px;
-            max-width: 92vw;
+            max-width: 64vw;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        /* ---------------- CHEST GUI ---------------- */
-        #portfolio-gui { background: rgba(0,0,0,0.6); }
+        .custom-corner-popup {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 400px;
+            height: 400px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out; 
+        }
 
+        .custom-corner-popup.show {
+            opacity: 1;
+            transition: none; 
+        }
+
+        .shake-anim {
+            animation: popupShake 0.1s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes popupShake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-2px, 0, 0); }
+            40%, 60% { transform: translate3d(2px, 0, 0); }
+        }
+        
+        #portfolio-gui { background: rgba(0,0,0,0.6); }
         .chest-window {
             background-image: url('ui/chest_gui_bg.png');
             background-size: 100% 100%;
-            width: 980px;
-            max-width: 92vw;
-            height: 72vh;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
+            width: 980px; max-width: 92vw; height: 72vh;
+            display: flex; flex-direction: column; padding: 24px;
         }
-
         .chest-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
         }
-
         .chest-title { font-size: 2.3rem; color: #373737; }
-
         .pixel-close-btn {
-            width: 36px; height: 36px;
-            background-image: url('ui/close_btn_normal.png');
-            background-size: 100% 100%;
-            cursor: pointer;
+            width: 36px; height: 36px; background-image: url('ui/close_btn_normal.png');
+            background-size: 100% 100%; cursor: pointer;
         }
         .pixel-close-btn:hover { background-image: url('ui/close_btn_hover.png'); }
         .pixel-close-btn:active { background-image: url('ui/close_btn_active.png'); }
-
         .inventory-grid {
-            background-image: url('ui/inventory_grid_bg.png');
-            background-size: 100% 100%;
-            flex-grow: 1;
-            padding: 16px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 14px;
-            overflow-y: auto;
+            background-image: url('ui/inventory_grid_bg.png'); background-size: 100% 100%;
+            flex-grow: 1; padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px; overflow-y: auto;
         }
-
         .item-card {
-            background-image: url('ui/item_slot_bg.png');
-            background-size: 100% 100%;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.08s;
+            background-image: url('ui/item_slot_bg.png'); background-size: 100% 100%; padding: 12px;
+            text-align: center; cursor: pointer; transition: transform 0.08s;
         }
         .item-card:hover { transform: scale(1.02); }
         .item-card img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            background-image: url('ui/image_preview_frame.png');
-            background-size: 100% 100%;
-            padding: 2px;
+            width: 100%; height: 130px; object-fit: cover;
+            background-image: url('ui/image_preview_frame.png'); background-size: 100% 100%; padding: 2px;
         }
         .item-card h4 { font-size: 1.5rem; color: #373737; margin-top: 6px; }
         .item-card p { font-size: 1.1rem; color: #555; }
-
         ::-webkit-scrollbar { width: 16px; }
         ::-webkit-scrollbar-track { background-image: url('ui/scrollbar_track.png'); background-size: 100% 100%; }
         ::-webkit-scrollbar-thumb { background-image: url('ui/scrollbar_thumb.png'); background-size: 100% 100%; }
+
+        /* ---------------- ОБНОВЛЕННОЕ GUI ABOUT ME ---------------- */
+        #about-gui {
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .about-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 800px;
+            max-width: 90vw;
+        }
+
+        .custom-display-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.8));
+            opacity: 0;
+            transform: scale(0.92) translateY(15px);
+        }
+
+        /* Анимация появления инвентаря */
+        #about-gui:not(.hidden) .custom-display-image {
+            animation: imagePopIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+        }
+
+        @keyframes imagePopIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(15px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Контейнер кнопок нижнего инвентаря */
+        .about-buttons-row {
+            position: absolute;
+            bottom: 7%;
+            left: 3.2%;
+            width: 93.6%;
+            height: 16.5%;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1%;
+            align-items: center;
+            justify-items: center;
+            z-index: 10;
+        }
+
+        /* Элемент иконки/кнопки */
+        .about-btn-slot {
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: transform 0.1s, filter 0.1s;
+        }
+
+        .about-btn-slot:hover {
+            filter: brightness(1.25);
+            transform: scale(1.08);
+        }
+
+        .about-btn-slot:active {
+            filter: brightness(0.85);
+            transform: scale(0.95);
+        }
+
+        /* Текстуры кнопок */
+        #about-slot-1 { background-image: url('ui/about_btn_1.png'); }
+        #about-slot-2 { background-image: url('ui/about_btn_2.png'); }
+        #about-slot-3 { background-image: url('ui/about_btn_3.png'); }
+        #about-slot-4 { background-image: url('ui/about_btn_4.png'); }
+        #about-slot-5 { background-image: url('ui/about_btn_5.png'); }
+
+        #about-slot-6 { 
+            background-image: url('ui/about_btn_6.png'); 
+            grid-column: 8;
+        }
+
+        /* Анимация появления кнопок */
+        #about-gui:not(.hidden) .about-btn-slot {
+            animation: btnPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(1) { animation-delay: 0.15s; }
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(2) { animation-delay: 0.22s; }
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(3) { animation-delay: 0.29s; }
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(4) { animation-delay: 0.36s; }
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(5) { animation-delay: 0.43s; }
+        #about-gui:not(.hidden) .about-btn-slot:nth-child(6) { animation-delay: 0.50s; }
+
+        @keyframes btnPopIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ---------------- ВСПОМОГАТЕЛЬНЫЙ ТУЛТИП (ПОДСКАЗКА) ---------------- */
+        .about-tooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.6));
+        }
+
+        .about-tooltip img {
+            display: block;
+            max-width: 280px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 1. Скайбокс на фоне -->
     <div id="skybox-container"></div>
     <div class="vignette"></div>
 
-    <!-- 2. Главное меню -->
+    <!-- Всплывающая подсказка с изображением descriptions -->
+    <div id="about-tooltip" class="about-tooltip">
+        <img id="about-tooltip-img" src="" alt="Item Description">
+    </div>
+
     <div class="ui-layer" id="main-menu">
         <div class="logo-container">
             <img src="ui/logo.png" alt="Animun4ik Logo" class="logo-image">
@@ -480,7 +520,7 @@
 
         <div class="button-group">
             <button id="btn-1" class="mc-btn-img" onclick="playUiSound('click'); openWorldSelect();"></button>
-            <button id="btn-2" class="mc-btn-img" onclick="playUiSound('click'); openGUI('about');"></button>
+            <button id="btn-2" class="mc-btn-img" onclick="playUiSound('click'); openAboutGUI();"></button>
             <button id="btn-3" class="mc-btn-img" onclick="playUiSound('click'); openGUI('contacts');"></button>
         </div>
 
@@ -490,45 +530,53 @@
         </div>
     </div>
 
-    <!-- 3. Окно «Выберите мир» (Обновленная Карусель без поиска и лишних кнопок) -->
-    <div class="ui-layer hidden" id="world-select-gui">
-        <div class="world-header">
-            <div class="world-select-title">Выберите мир</div>
-        </div>
-        
-        <div class="carousel-container">
-            <button class="nav-arrow left-arrow" onclick="playUiSound('click'); prevCarouselItem();">
-                <img src="ui/arrow_left.png" alt="Prev">
-            </button>
-            <div class="carousel-viewport">
-                <div class="carousel-track" id="carousel-track">
-                    <!-- Карточки будут сгенерированы через JavaScript -->
-                </div>
-            </div>
-            <button class="nav-arrow right-arrow" onclick="playUiSound('click'); nextCarouselItem();">
-                <img src="ui/arrow_right.png" alt="Next">
-            </button>
-        </div>
-
-        <div class="carousel-info-panel" id="carousel-info-panel">
-            <!-- Динамическая информация о выбранном мире -->
-        </div>
-
-        <div class="world-footer">
-            <div class="footer-btn-grid">
-                <div class="btn-row">
-                    <button id="btn-4" class="mc-btn-img" onclick="playUiSound('click'); playSelectedWorld();">Играть в выбранном мире</button>
-                    <button id="btn-5" class="mc-btn-img" onclick="playUiSound('click'); alert('Создание нового проекта...');">Создать новый мир</button>
-                </div>
-                <div class="btn-row">
-                    <button id="btn-6" class="mc-btn-img" onclick="playUiSound('click'); playSelectedWorld();">Изменить</button>
-                    <button id="btn-9" class="mc-btn-img" onclick="playUiSound('click'); closeGUI();">Отмена</button>
-                </div>
+    <!-- ОКНО ABOUT ME -->
+    <div class="ui-layer hidden" id="about-gui">
+        <div class="about-container">
+            <img src="ui/about_image.png" alt="About GUI" class="custom-display-image" id="custom-image-slot">
+            
+            <div class="about-buttons-row">
+                <button class="about-btn-slot" id="about-slot-1" onclick="playUiSound('click');"></button>
+                <button class="about-btn-slot" id="about-slot-2" onclick="playUiSound('click');"></button>
+                <button class="about-btn-slot" id="about-slot-3" onclick="playUiSound('click');"></button>
+                <button class="about-btn-slot" id="about-slot-4" onclick="playUiSound('click');"></button>
+                <button class="about-btn-slot" id="about-slot-5" onclick="playUiSound('click');"></button>
+                <button class="about-btn-slot" id="about-slot-6" onclick="playUiSound('click'); closeGUI();"></button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Окно сундука -->
+    <div class="ui-layer hidden" id="world-select-gui">
+        
+        <div id="custom-corner-popup" class="custom-corner-popup"></div>
+
+        <div class="world-header">
+			<img src="ui/Category_text.png" class="world-select-title-img">
+		</div>
+        
+        <div class="carousel-container">
+            <div class="carousel-track" id="carousel-track">
+            </div>
+        </div>
+
+        <div class="world-footer">
+            <button class="nav-arrow left-arrow" onclick="prevCarouselItem();"></button>
+
+            <div class="footer-btn-grid">
+                <div class="btn-row">
+                    <button id="btn-4" class="mc-btn-img-mini" onclick="playUiSound('click'); playSelectedWorld();"></button>
+                    <button id="btn-5" class="mc-btn-img-mini" onclick="clickBtn5()"></button>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-6" class="mc-btn-img-mini" onclick="clickBtn6()"></button>
+                    <button id="btn-9" class="mc-btn-img-mini" onclick="playUiSound('click'); closeGUI();"></button>
+                </div>
+            </div>
+
+            <button class="nav-arrow right-arrow" onclick="nextCarouselItem();"></button>
+        </div>
+    </div>
+
     <div class="ui-layer hidden" id="portfolio-gui">
         <div class="chest-window">
             <div class="chest-header">
@@ -540,150 +588,227 @@
     </div>
 
     <script>
-        // ==========================================
-        // ЗВУКИ МЕНЮ
-        // ==========================================
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playUiSound(type) {
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            osc.connect(gain); gain.connect(audioCtx.destination);
 
             if (type === 'hover') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.type = 'square'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             } else if (type === 'click') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(120, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.08);
             }
         }
 
         document.addEventListener('mouseover', (e) => {
-            if (e.target.classList.contains('mc-btn-img') || e.target.classList.contains('carousel-card') || e.target.classList.contains('pixel-close-btn') || e.target.classList.contains('nav-arrow') || e.target.closest('.nav-arrow')) {
+            if (((e.target.classList.contains('mc-btn-img') || e.target.classList.contains('mc-btn-img-mini') || e.target.classList.contains('pixel-close-btn') || e.target.classList.contains('about-btn-slot')) && !e.target.classList.contains('broke')) || 
+                (e.target.classList.contains('nav-arrow') && !e.target.classList.contains('deactive'))) {
                 playUiSound('hover');
             }
         });
 
-        // ==========================================
-        // БАЗА ДАННЫХ И ЛОГИКА
-        // ==========================================
+        // Глобальный обработчик клавиши Esc для выхода в главное меню
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const worldSelect = document.getElementById('world-select-gui');
+                const aboutGui = document.getElementById('about-gui');
+                const portfolioGui = document.getElementById('portfolio-gui');
+
+                if (!worldSelect.classList.contains('hidden') || 
+                    !aboutGui.classList.contains('hidden') || 
+                    !portfolioGui.classList.contains('hidden')) {
+                    playUiSound('click');
+                    closeGUI();
+                }
+            }
+        });
+
+		// Счетчики кликов и переменные для пасхалки
+		let btn5Clicks = 0;
+		let btn6Clicks = 0;
+		let buttonSequence = ""; 
+		let popupTimeout; 
+
+        // Карта перенаправлений для повторяющихся изображений
+        const imageAliases = {
+            '666': '555',
+            '5565': '555', '5655': '555', '5666': '555', '6555': '555',
+            '55665': '555', '55666': '555', '56565': '555', '56566': '555',
+            '56655': '555', '56656': '555', '65565': '555', '65566': '555',
+            '6556': '5665', '56665': '5665', '65556': '5665',
+            '6665': '5556', '56556': '5556',
+            '665': '556',
+            '55656': '55566'
+        };
+
+		function clickBtn5() {
+			const btn = document.getElementById('btn-5');
+			if (btn.classList.contains('broke')) return;
+			
+			playUiSound('click');
+			btn5Clicks++;
+			triggerCornerPopup('5');
+			
+			if (btn5Clicks >= 3) {
+				btn.classList.add('broke');
+			}
+		}
+
+		function clickBtn6() {
+			const btn = document.getElementById('btn-6');
+			if (btn.classList.contains('broke')) return;
+			
+			playUiSound('click');
+			btn6Clicks++;
+			triggerCornerPopup('6');
+			
+			if (btn6Clicks >= 3) {
+				btn.classList.add('broke');
+			}
+		}
+
+		function triggerCornerPopup(btnNum) {
+			const popup = document.getElementById('custom-corner-popup');
+			
+			buttonSequence += btnNum; 
+			
+			clearTimeout(popupTimeout);
+			popup.classList.remove('show', 'shake-anim');
+			
+            let targetImage = buttonSequence;
+
+            if (buttonSequence.length === 6) {
+                targetImage = '555666';
+            } 
+            else if (imageAliases[buttonSequence]) {
+                targetImage = imageAliases[buttonSequence];
+            }
+
+			popup.style.backgroundImage = `url('ui/buttonstory/${targetImage}.png')`;
+			
+			void popup.offsetWidth;
+			
+			popup.classList.add('show', 'shake-anim');
+			
+			popupTimeout = setTimeout(() => { 
+				popup.classList.remove('show');
+			}, 2000);
+		}
+
         const projectWorlds = [
-            { id: "swords", name: "Текстуры Оружия", meta: "3D_Swords (07/08/2026, 9:15 pm)", details: "Творческий режим, Версия: 1.20.4", img: "ui/icons/swords_icon.png", desc: "Детализированные 3D модели мечей и инструментов." },
-            { id: "dragon", name: "Модель Дракона", meta: "Custom_Boss_Dragon (15/06/2026, 6:40 pm)", details: "Творческий режим, Версия: Blockbench", img: "ui/icons/dragon_icon.png", desc: "Кастомная модель босса с уникальными анимациями." },
-            { id: "anim", name: "Пак Анимаций", meta: "Player_Animations (02/04/2026, 1:00 pm)", details: "Выживание, Версия: GeckoLib", img: "ui/icons/anim_icon.png", desc: "Анимации боя, бега и взаимодействия." },
-            { id: "concepts", name: "Концепт Арты", meta: "Art_Collection (20/01/2026, 9:15 am)", details: "Хардкор, Версия: PixelArt", img: "ui/icons/art_icon.png", desc: "Галерея пиксельных концепт-артов." },
-            { id: "gui", name: "Кастомный UI", meta: "Custom_GUI_Pack (10/11/2025, 2:22 pm)", details: "Творческий режим, Версия: Vanilla", img: "ui/icons/gui_icon.png", desc: "Интерфейсы сундуков, верстаков и меню." }
+            { id: "blocks", name: "Blocks Textures", img: "ui/world_blocks.png" },
+            { id: "sprites", name: "Sprites", img: "ui/world_sprites.png" },
+            { id: "models", name: "Models", img: "ui/world_models.png" },
+            { id: "concepts", name: "Concept Art", img: "ui/world_concept.png" },
+            { id: "animations", name: "Animations", img: "ui/world_animations.png" }
         ];
 
         const database = {
-            about: [
-                { title: "Мой опыт", img: "ui/portfolio/exp_icon.png", desc: "Делаю круто." },
-                { title: "Софт", img: "ui/portfolio/soft_icon.png", desc: "Blockbench, Photoshop, Aseprite" }
-            ],
-            contacts: [
-                { title: "Discord", img: "ui/portfolio/discord_icon.png", desc: "@animun4ik" },
-                { title: "Modrinth", img: "ui/portfolio/modrinth_icon.png", desc: "Мои паки" }
-            ]
+            about: [{ title: "Мой опыт", img: "ui/portfolio/exp_icon.png" }, { title: "Софт", img: "ui/portfolio/soft_icon.png" }],
+            contacts: [{ title: "Discord", img: "ui/portfolio/discord_icon.png" }, { title: "Modrinth", img: "ui/portfolio/modrinth_icon.png" }]
         };
 
         const titles = { about: "Сундук: Инвентарь навыков", contacts: "Сундук: Почтовый ящик" };
-        const splashes = ["100% Custom!", "Better than Vanilla!", "Blockbench Master!", "Pixels Perfect!", "Needs More Diamonds!", "CIT Powered!"];
-        
+        const splashes = ["100% Custom!", "Better than Vanilla!", "Blockbench Master!", "Pixels Perfect!"];
         document.getElementById('splash').innerText = splashes[Math.floor(Math.random() * splashes.length)];
         
-        // --- ЛОГИКА КАРУСЕЛИ ---
         let selectedWorldIndex = 0;
         let currentCarouselIndex = 0;
 
         function openWorldSelect() {
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('world-select-gui').classList.remove('hidden');
-            
-            currentCarouselIndex = 0;
+            currentCarouselIndex = 2;
             renderWorldsCarousel();
             document.addEventListener('keydown', carouselKeyHandler);
+        }
+
+        function openAboutGUI() {
+            const btn5Broke = document.getElementById('btn-5').classList.contains('broke');
+            const btn6Broke = document.getElementById('btn-6').classList.contains('broke');
+            const customImage = document.getElementById('custom-image-slot');
+
+            if (btn5Broke && btn6Broke) {
+                customImage.src = 'ui/about_image_broke.png';
+            } else {
+                customImage.src = 'ui/about_image.png';
+            }
+
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('about-gui').classList.remove('hidden');
         }
 
         function closeGUI() {
             document.getElementById('portfolio-gui').classList.add('hidden');
             document.getElementById('world-select-gui').classList.add('hidden');
+            document.getElementById('about-gui').classList.add('hidden');
             document.getElementById('main-menu').classList.remove('hidden');
             document.removeEventListener('keydown', carouselKeyHandler);
+            hideTooltip();
         }
 
-        // Обработчик клавиш клавиатуры
         function carouselKeyHandler(e) {
             if (document.getElementById('world-select-gui').classList.contains('hidden')) return;
-
-            if (e.key === 'ArrowRight') {
-                playUiSound('hover');
-                nextCarouselItem();
-            } else if (e.key === 'ArrowLeft') {
-                playUiSound('hover');
-                prevCarouselItem();
-            } else if (e.key === 'Enter') {
-                playUiSound('click');
-                playSelectedWorld();
-            }
+            if (e.key === 'ArrowRight') { nextCarouselItem(); }
+            else if (e.key === 'ArrowLeft') { prevCarouselItem(); }
+            else if (e.key === 'Enter') { playUiSound('click'); playSelectedWorld(); }
         }
 
         function renderWorldsCarousel() {
             const track = document.getElementById('carousel-track');
             track.innerHTML = '';
-
-            if (projectWorlds.length === 0) {
-                track.innerHTML = '<div style="color:white; font-size: 2.2rem; text-shadow: 2px 2px #000;">Проекты не найдены</div>';
-                updateCarouselInfo(null);
-                return;
-            }
-
             projectWorlds.forEach((world, index) => {
                 track.innerHTML += `
                     <div class="carousel-card" onclick="selectCarouselItem(${index})" ondblclick="playUiSound('click'); playSelectedWorld();">
-                        <div class="world-icon-wrapper">
-                            <img src="${world.img}" alt="${world.name}" class="world-icon">
-                        </div>
+                        <img src="${world.img}" alt="${world.name}" class="world-image">
+                        <div class="world-frame"></div>
                     </div>
                 `;
             });
-
             updateCarousel();
         }
 
         function updateCarousel() {
-            if (projectWorlds.length === 0) return;
-
             const cards = document.querySelectorAll('.carousel-card');
-            const track = document.getElementById('carousel-track');
-            
-            // Расчет сдвига для увеличенных карт: ширина карты (220) + margin (15*2) = 250
-            const itemWidth = 250; 
-
             cards.forEach((card, index) => {
-                card.className = 'carousel-card';
-                
-                if (index === currentCarouselIndex) {
-                    card.classList.add('active');
-                } else if (index === currentCarouselIndex - 1) {
-                    card.classList.add('prev');
-                } else if (index === currentCarouselIndex + 1) {
-                    card.classList.add('next');
-                }
+                const offset = index - currentCarouselIndex;
+                let scale = 1, translateX = 0, zIndex = 5 - Math.abs(offset), brightness = 1, opacity = 1;
+
+                if (offset === 0) { scale = 1.1; translateX = 0; brightness = 1; } 
+                else if (offset === -1) { scale = 0.85; translateX = -300; brightness = 0.6; } 
+                else if (offset === 1) { scale = 0.85; translateX = 300; brightness = 0.6; } 
+                else if (offset === -2) { scale = 0.65; translateX = -520; brightness = 0.3; } 
+                else if (offset === 2) { scale = 0.65; translateX = 520; brightness = 0.3; } 
+                else { scale = 0.5; opacity = 0; translateX = offset < 0 ? -600 : 600; }
+
+                card.style.transform = `translate(-50%, -50%) translateX(${translateX}px) scale(${scale})`;
+                card.style.zIndex = zIndex;
+                card.style.filter = `brightness(${brightness})`;
+                card.style.opacity = opacity;
             });
+            selectedWorldIndex = currentCarouselIndex; 
 
-            const offset = -((currentCarouselIndex * itemWidth) + (itemWidth / 2));
-            track.style.transform = `translateX(${offset}px) translateY(-50%)`;
+            const leftArrow = document.querySelector('.left-arrow');
+            const rightArrow = document.querySelector('.right-arrow');
 
-            updateCarouselInfo(projectWorlds[currentCarouselIndex]);
+            if (currentCarouselIndex === 0) {
+                leftArrow.classList.add('deactive');
+            } else {
+                leftArrow.classList.remove('deactive');
+            }
+
+            if (currentCarouselIndex === projectWorlds.length - 1) {
+                rightArrow.classList.add('deactive');
+            } else {
+                rightArrow.classList.remove('deactive');
+            }
         }
 
         function selectCarouselItem(index) {
@@ -695,37 +820,23 @@
 
         function nextCarouselItem() {
             if (currentCarouselIndex < projectWorlds.length - 1) {
-                currentCarouselIndex++;
+                playUiSound('click');
+                currentCarouselIndex++; 
                 updateCarousel();
             }
         }
 
         function prevCarouselItem() {
             if (currentCarouselIndex > 0) {
-                currentCarouselIndex--;
+                playUiSound('click');
+                currentCarouselIndex--; 
                 updateCarousel();
             }
         }
 
-        function updateCarouselInfo(world) {
-            const panel = document.getElementById('carousel-info-panel');
-            if (!world) {
-                panel.innerHTML = '';
-                return;
-            }
-            
-            panel.innerHTML = `
-                <div class="info-title">${world.name}</div>
-                <div class="info-meta">${world.meta}</div>
-                <div class="info-desc">${world.details} — ${world.desc}</div>
-            `;
-            
-            selectedWorldIndex = projectWorlds.indexOf(world); 
-        }
-
         function playSelectedWorld() {
             const world = projectWorlds[selectedWorldIndex];
-            if(world) alert(`Загрузка проекта: "${world.name}"...\n\nОписание: ${world.desc}`);
+            if(world) alert(`Загрузка проекта: "${world.name}"...`);
         }
 
         function openGUI(section) {
@@ -735,32 +846,73 @@
             const content = document.getElementById('inventory-content');
             content.innerHTML = '';
             database[section].forEach(item => {
-                content.innerHTML += `
-                    <div class="item-card">
-                        <img src="${item.itemImg || item.img}" alt="${item.title}">
-                        <h4>${item.title}</h4>
-                        ${item.desc ? `<p>${item.desc}</p>` : ''}
-                    </div>
-                `;
+                content.innerHTML += `<div class="item-card"><img src="${item.img}"><h4>${item.title}</h4></div>`;
             });
         }
 
-        // ==========================================
-        // 3D СКАЙБОКС ИЗ ТЕКСТУР-ФАЙЛОВ
-        // ==========================================
+        /* ---------------- ЛОГИКА ТУЛТИПОВ ДЛЯ СЛОТОВ 1-5 ---------------- */
+        const tooltipElem = document.getElementById('about-tooltip');
+        const tooltipImg = document.getElementById('about-tooltip-img');
+
+        // Пути к изображениям описаний для каждого слота
+        const slotTooltips = {
+            'about-slot-1': 'ui/desc_slot_1.png',
+            'about-slot-2': 'ui/desc_slot_2.png',
+            'about-slot-3': 'ui/desc_slot_3.png',
+            'about-slot-4': 'ui/desc_slot_4.png',
+            'about-slot-5': 'ui/desc_slot_5.png'
+        };
+
+        // Отслеживание перемещения курсора
+        document.addEventListener('mousemove', (e) => {
+            if (tooltipElem.style.display === 'block') {
+                const offset = 15;
+                let x = e.clientX + 10;
+                let y = e.clientY - 20;
+
+                // Не даем картинке выходить за правую/нижнюю границу экрана
+                if (x + tooltipElem.offsetWidth > window.innerWidth) {
+                    x = e.clientX - tooltipElem.offsetWidth - 5;
+                }
+                if (y + tooltipElem.offsetHeight > window.innerHeight) {
+                    y = e.clientY - tooltipElem.offsetHeight - 5;
+                }
+
+                tooltipElem.style.left = x + 'px';
+                tooltipElem.style.top = y + 'px';
+            }
+        });
+
+        // Навешивание событий на слоты 1-5
+        Object.keys(slotTooltips).forEach((slotId) => {
+            const slotElem = document.getElementById(slotId);
+            if (slotElem) {
+                slotElem.addEventListener('mouseenter', () => {
+                    tooltipImg.src = slotTooltips[slotId];
+                    tooltipElem.style.display = 'block';
+                });
+                slotElem.addEventListener('mouseleave', () => {
+                    hideTooltip();
+                });
+            }
+        });
+
+        function hideTooltip() {
+            tooltipElem.style.display = 'none';
+            tooltipImg.src = '';
+        }
+
+        /* ---------------- THREE.JS SKYBOX ---------------- */
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: false });
-        
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('skybox-container').appendChild(renderer.domElement);
 
         const textureLoader = new THREE.TextureLoader();
-        
         function loadSkyTexture(path) {
             const tex = textureLoader.load(path);
-            tex.magFilter = THREE.NearestFilter;
-            tex.minFilter = THREE.NearestFilter;
+            tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
             return tex;
         }
 
@@ -773,30 +925,21 @@
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side.png'), side: THREE.BackSide })
         ];
         
-        const skyboxGeo = new THREE.BoxGeometry(900, 900, 900);
-        const skybox = new THREE.Mesh(skyboxGeo, skyMaterials);
-        scene.add(skybox);
+        scene.add(new THREE.Mesh(new THREE.BoxGeometry(900, 900, 900), skyMaterials));
 
         let lon = 0, lat = 0, phi = 0, theta = 0;
         function animate() {
             requestAnimationFrame(animate);
-            lon += 0.05; 
-            lat = Math.max(-85, Math.min(85, lat));
-            phi = THREE.MathUtils.degToRad(90 - lat);
-            theta = THREE.MathUtils.degToRad(lon);
-            
-            camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
-            camera.position.y = 100 * Math.cos(phi);
-            camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+            lon += 0.05; lat = Math.max(-85, Math.min(85, lat));
+            phi = THREE.MathUtils.degToRad(90 - lat); theta = THREE.MathUtils.degToRad(lon);
+            camera.position.set(100 * Math.sin(phi) * Math.cos(theta), 100 * Math.cos(phi), 100 * Math.sin(phi) * Math.sin(theta));
             camera.lookAt(scene.position);
-            
             renderer.render(scene, camera);
         }
         animate();
 
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
