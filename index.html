@@ -256,14 +256,16 @@
             40%, 60% { transform: translate3d(2px, 0, 0); }
         }
         
-        #portfolio-gui, #blocks-gui { background: rgba(0,0,0,0.65); }
+        #portfolio-gui, #blocks-gui, #sprites-gui { background: rgba(0,0,0,0.65); }
         .chest-window {
             background-image: url('ui/chest_gui_bg.png'); background-size: 100% 100%;
             width: 980px; max-width: 92vw; height: 76vh;
             display: flex; flex-direction: column; padding: 24px;
         }
         .chest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .chest-title { font-size: 2.3rem; color: #373737; }
+        .chest-title { font-size: 2.3rem; color: #373737; display: flex; align-items: center; }
+        .chest-title-img { height: 36px; width: auto; object-fit: contain; display: block; }
+        
         .pixel-close-btn {
             width: 36px; height: 36px; background-image: url('ui/close_btn_normal.png');
             background-size: 100% 100%; cursor: pointer;
@@ -284,8 +286,8 @@
             flex-grow: 1;
             padding: 16px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 0; /* Отсутствие отступов между блоками */
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0;
             overflow-y: auto;
             align-content: start;
         }
@@ -518,14 +520,25 @@
         </div>
     </div>
 
-    <!-- НОВОЕ ОКНО: 16x16 БЛОКИ ИЗ JSON -->
+    <!-- ОКНО: BLOCKS ИЗ JSON -->
     <div class="ui-layer hidden" id="blocks-gui">
         <div class="chest-window">
             <div class="chest-header">
-                <div class="chest-title">Сундук: Блоки (16x16)</div>
-                <button class="pixel-close-btn" onclick="playUiSound('click'); closeGUI();"></button>
+                <div class="chest-title"><img src="ui/blocks_title.png" alt="Blocks" class="chest-title-img"></div>
+                <button class="pixel-close-btn" onclick="playUiSound('click'); closeToWorldSelect();"></button>
             </div>
             <div class="blocks-grid-container" id="blocks-grid"></div>
+        </div>
+    </div>
+
+    <!-- ОКНО: SPRITES ИЗ JSON -->
+    <div class="ui-layer hidden" id="sprites-gui">
+        <div class="chest-window">
+            <div class="chest-header">
+                <div class="chest-title"><img src="ui/sprites_title.png" alt="Sprites" class="chest-title-img"></div>
+                <button class="pixel-close-btn" onclick="playUiSound('click'); closeToWorldSelect();"></button>
+            </div>
+            <div class="blocks-grid-container" id="sprites-grid"></div>
         </div>
     </div>
 
@@ -595,12 +608,20 @@
                 const contactGui = document.getElementById('contact-gui');
                 const portfolioGui = document.getElementById('portfolio-gui');
                 const blocksGui = document.getElementById('blocks-gui');
+                const spritesGui = document.getElementById('sprites-gui');
 
+                // Переход на World Selection из блоков и спрайтов
+                if (!blocksGui.classList.contains('hidden') || !spritesGui.classList.contains('hidden')) {
+                    playUiSound('click');
+                    closeToWorldSelect();
+                    return;
+                }
+
+                // Стандартное закрытие всех остальных окон в главное меню
                 if (!worldSelect.classList.contains('hidden') || 
                     !aboutGui.classList.contains('hidden') || 
                     !contactGui.classList.contains('hidden') || 
-                    !portfolioGui.classList.contains('hidden') ||
-                    !blocksGui.classList.contains('hidden')) {
+                    !portfolioGui.classList.contains('hidden')) {
                     playUiSound('click');
                     closeGUI();
                 }
@@ -709,8 +730,9 @@
 
         function openWorldSelect() {
             document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('blocks-gui').classList.add('hidden');
+            document.getElementById('sprites-gui').classList.add('hidden');
             document.getElementById('world-select-gui').classList.remove('hidden');
-            currentCarouselIndex = 0; // Начинаем с блоков (индекс 0)
             renderWorldsCarousel();
             document.addEventListener('keydown', carouselKeyHandler);
         }
@@ -735,12 +757,19 @@
         function closeGUI() {
             document.getElementById('portfolio-gui').classList.add('hidden');
             document.getElementById('blocks-gui').classList.add('hidden');
+            document.getElementById('sprites-gui').classList.add('hidden');
             document.getElementById('world-select-gui').classList.add('hidden');
             document.getElementById('about-gui').classList.add('hidden');
             document.getElementById('contact-gui').classList.add('hidden');
             document.getElementById('main-menu').classList.remove('hidden');
             document.removeEventListener('keydown', carouselKeyHandler);
             hideTooltip();
+        }
+
+        function closeToWorldSelect() {
+            document.getElementById('blocks-gui').classList.add('hidden');
+            document.getElementById('sprites-gui').classList.add('hidden');
+            openWorldSelect();
         }
 
         function carouselKeyHandler(e) {
@@ -817,18 +846,21 @@
             }
         }
 
-        /* ---------------- ЛОГИКА ОТКРЫТИЯ КНОПКИ BLOCKS И ГЕНЕРАЦИЯ СЕТКИ ---------------- */
+        /* ---------------- ЛОГИКА ВЫБОРА ПРОЕКТА ---------------- */
         function playSelectedWorld() {
             const world = projectWorlds[selectedWorldIndex];
             if (!world) return;
 
             if (world.id === 'blocks') {
                 openBlocksGUI();
+            } else if (world.id === 'sprites') {
+                openSpritesGUI();
             } else {
                 alert(`Загрузка проекта: "${world.name}"...`);
             }
         }
 
+        /* ---------------- ОКНО БЛОКОВ (blocks.json) ---------------- */
         async function openBlocksGUI() {
             document.getElementById('world-select-gui').classList.add('hidden');
             document.getElementById('main-menu').classList.add('hidden');
@@ -838,22 +870,16 @@
             gridContainer.innerHTML = '';
 
             try {
-                // Запрос файла blocks.json
                 const response = await fetch('blocks.json');
                 const data = await response.json();
                 
-                // Поддержка структуры массивов: ["path.png", ...] или объектов [{ "src": "path.png" }]
                 let rawList = Array.isArray(data) ? data : (data.blocks || []);
                 let imagePaths = rawList.map(item => typeof item === 'string' ? item : (item.src || item.path || item.img));
                 
-                // Убираем возможные повторяющиеся элементы через Set
                 const uniqueImages = [...new Set(imagePaths)].filter(Boolean);
-
                 renderBlocksGrid(uniqueImages);
             } catch (err) {
-                console.warn('Не удалось загрузить blocks.json (проверьте наличие файла). Запуск демо-набора:', err);
-                
-                // Демонстрационный набор на случай отсутствия локального сервера / файла
+                console.warn('Не удалось загрузить blocks.json. Запуск демо-набора:', err);
                 const demoImages = [
                     'ui/blocks/dirt.png', 'ui/blocks/grass.png', 'ui/blocks/stone.png',
                     'ui/blocks/cobblestone.png', 'ui/blocks/planks.png', 'ui/blocks/sand.png',
@@ -876,7 +902,53 @@
                 img.src = imgSrc;
                 img.alt = '16x16 Block';
                 
-                // Добавляем плавную задержку поочередного разжатия (каскадный эффект)
+                img.style.animationDelay = `${Math.min(index * 0.02, 0.5)}s`;
+
+                slot.appendChild(img);
+                gridContainer.appendChild(slot);
+            });
+        }
+
+        /* ---------------- ОКНО СПРАЙТОВ (sprites.json) ---------------- */
+        async function openSpritesGUI() {
+            document.getElementById('world-select-gui').classList.add('hidden');
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('sprites-gui').classList.remove('hidden');
+
+            const gridContainer = document.getElementById('sprites-grid');
+            gridContainer.innerHTML = '';
+
+            try {
+                const response = await fetch('sprites.json');
+                const data = await response.json();
+                
+                let rawList = Array.isArray(data) ? data : (data.sprites || []);
+                let imagePaths = rawList.map(item => typeof item === 'string' ? item : (item.src || item.path || item.img));
+                
+                const uniqueImages = [...new Set(imagePaths)].filter(Boolean);
+                renderSpritesGrid(uniqueImages);
+            } catch (err) {
+                console.warn('Не удалось загрузить sprites.json. Запуск демо-набора:', err);
+                const demoImages = [
+                    'ui/sprites/sword.png', 'ui/sprites/pickaxe.png', 'ui/sprites/axe.png',
+                    'ui/sprites/shovel.png', 'ui/sprites/hoe.png', 'ui/sprites/apple.png'
+                ];
+                renderSpritesGrid([...new Set(demoImages)]);
+            }
+        }
+
+        function renderSpritesGrid(images) {
+            const gridContainer = document.getElementById('sprites-grid');
+            gridContainer.innerHTML = '';
+
+            images.forEach((imgSrc, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'block-item-slot';
+                
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = 'Sprite Item';
+                
                 img.style.animationDelay = `${Math.min(index * 0.02, 0.5)}s`;
 
                 slot.appendChild(img);
@@ -954,7 +1026,7 @@
             'ui/contact_close_btn.png', 'ui/copied.png',
             'ui/desc_slot_1.png', 'ui/desc_slot_2.png', 'ui/desc_slot_3.png', 'ui/desc_slot_4.png', 'ui/desc_slot_5.png',
             'ui/about_image.png', 'ui/about_image_broke.png', 'ui/contact_image.png', 'ui/dirt_bg.png', 'ui/vignette.png', 'ui/logo.png', 'ui/logo_subtitle.png',
-            'ui/frame.png', 'ui/shadow_ui.png', 'ui/Category_text.png'
+            'ui/frame.png', 'ui/shadow_ui.png', 'ui/Category_text.png', 'ui/blocks_title.png', 'ui/sprites_title.png'
         ];
 
         function preloadUIImages(urls) {
