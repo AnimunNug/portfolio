@@ -1,0 +1,23 @@
+[
+    {
+        "id": "ui_design",
+        "title": "Minecraft Custom UI",
+        "thumbnail": "ui/portfolio/concepts/ui_thumb.png",
+        "images": [
+            "ui/portfolio/concepts/ui_final.png",
+            "ui/portfolio/concepts/ui_elements.png",
+            "ui/portfolio/concepts/ui_sketch.png"
+        ],
+        "description": "Концепт пользовательского интерфейса для веб-портфолио. Отрисовка всех кнопок, рамок и слотов в Aseprite с соблюдением строгой пиксельной сетки."
+    },
+    {
+        "id": "end_update",
+        "title": "End Update Concept",
+        "thumbnail": "ui/portfolio/concepts/end_thumb.png",
+        "images": [
+            "ui/portfolio/concepts/end_thumbnail.png",
+            "ui/portfolio/concepts/end_layers.png"
+        ],
+        "description": "Аналитический разбор и визуальный концепт для видео-теории по обновлению Энда. Подготовка слоев для последующей анимации."
+    }
+]
