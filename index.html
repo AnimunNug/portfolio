@@ -224,8 +224,31 @@
             transform-origin: center center; user-select: none;
         }
 
-        .world-image { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
-        .world-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('ui/frame.png'); background-size: 100% 100%; z-index: 2; pointer-events: none; }
+        /* 1. Картинка мира зафиксирована строго по размеру карточки */
+		.world-image { 
+			width: 100%; 
+			height: 100%; 
+			object-fit: cover; 
+			position: absolute; 
+			top: 0; 
+			left: 0; 
+			z-index: 1; 
+		}
+
+		/* 2. Рамка накладывается поверх картинки */
+		.world-frame { 
+			position: absolute; 
+			/* Настройка размера ТОЛЬКО рамки (например, расширение на 4px во все стороны) */
+			top: -62px; 
+			left: -62px; 
+			width: calc(100% + 124px); 
+			height: calc(100% + 124px); 
+			background-size: 100% 100%; 
+			background-repeat: no-repeat; 
+			z-index: 2; 
+			pointer-events: none; 
+		}
+
         .world-footer { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 20px; padding-bottom: 40px; width: 100%; z-index: 5; }
 
         .nav-arrow { width: 78px; height: 78px; background-size: 100% 100%; background-repeat: no-repeat; cursor: pointer; border: none; transition: none; }
@@ -708,12 +731,13 @@
 			}, 2000);
 		}
 
+        /* ---------------- ДАННЫЕ МИРОВ И ИХ ИНДИВИДУАЛЬНЫЕ РАМКИ ---------------- */
         const projectWorlds = [
-            { id: "blocks", name: "Blocks Textures", img: "ui/world_blocks.png" },
-            { id: "sprites", name: "Sprites", img: "ui/world_sprites.png" },
-            { id: "models", name: "Models", img: "ui/world_models.png" },
-            { id: "concepts", name: "Concept Art", img: "ui/world_concept.png" },
-            { id: "animations", name: "Animations", img: "ui/world_animations.png" }
+            { id: "blocks", name: "Blocks Textures", img: "ui/world_blocks.png", frame: "ui/frame_blocks.png" },
+            { id: "sprites", name: "Sprites", img: "ui/world_sprites.png", frame: "ui/frame_sprites.png" },
+            { id: "models", name: "Models", img: "ui/world_models.png", frame: "ui/frame_models.png" },
+            { id: "concepts", name: "Concept Art", img: "ui/world_concept.png", frame: "ui/frame_concepts.png" },
+            { id: "animations", name: "Animations", img: "ui/world_animations.png", frame: "ui/frame_animations.png" }
         ];
 
         const database = {
@@ -786,7 +810,7 @@
                 track.innerHTML += `
                     <div class="carousel-card" onclick="selectCarouselItem(${index})" ondblclick="playUiSound('click'); playSelectedWorld();">
                         <img src="${world.img}" alt="${world.name}" class="world-image">
-                        <div class="world-frame"></div>
+                        <div class="world-frame" style="background-image: url('${world.frame}');"></div>
                     </div>
                 `;
             });
@@ -1026,7 +1050,8 @@
             'ui/contact_close_btn.png', 'ui/copied.png',
             'ui/desc_slot_1.png', 'ui/desc_slot_2.png', 'ui/desc_slot_3.png', 'ui/desc_slot_4.png', 'ui/desc_slot_5.png',
             'ui/about_image.png', 'ui/about_image_broke.png', 'ui/contact_image.png', 'ui/dirt_bg.png', 'ui/vignette.png', 'ui/logo.png', 'ui/logo_subtitle.png',
-            'ui/frame.png', 'ui/shadow_ui.png', 'ui/Category_text.png', 'ui/blocks_title.png', 'ui/sprites_title.png'
+            'ui/frame_blocks.png', 'ui/frame_sprites.png', 'ui/frame_models.png', 'ui/frame_concepts.png', 'ui/frame_animations.png',
+            'ui/shadow_ui.png', 'ui/Category_text.png', 'ui/blocks_title.png', 'ui/sprites_title.png'
         ];
 
         function preloadUIImages(urls) {
