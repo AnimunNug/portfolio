@@ -1,23 +1,24 @@
-[
-    {
-        "id": "lunaria_props",
-        "title": "Lunaria CIT Props",
-        "thumbnail": "ui/portfolio/models/lunaria_thumb.png",
-        "images": [
-            "ui/portfolio/models/lunaria_render.png",
-            "ui/portfolio/models/lunaria_mesh.png",
-            "ui/portfolio/models/lunaria_texture.png"
-        ],
-        "description": "Набор кастомных 3D-моделей для декораций города Lunaria. Сделано с помощью Blockbench. Включает полную настройку .json файлов и интеграцию кастомных текстур."
-    },
-    {
-        "id": "retro_vehicles",
-        "title": "Retro Y2K Vehicles",
-        "thumbnail": "ui/portfolio/models/vehicle_thumb.png",
-        "images": [
-            "ui/portfolio/models/vehicle_1.png",
-            "ui/portfolio/models/vehicle_2.png"
-        ],
-        "description": "Низкополигональные модели транспорта в стилистике конца 90-х и нулевых. Использована техника vertex snapping для передачи аутентичного ретро-вида."
-    }
-]
+{
+    "projects": [
+        {
+            "id": "lunaria_props",
+            "title": "Lunaria CIT Props",
+            "thumbnail": "ui/models/lunaria_thumb.png",
+            "images": [
+                "ui/models/lunaria_render.png",
+                "ui/models/lunaria_mesh.png",
+                "ui/models/lunaria_texture.png"
+            ],
+            "description": "Набор кастомных 3D-моделей для декораций города Lunaria. Сделано с помощью Blockbench. Включает полную настройку .json файлов и интеграцию кастомных текстур."
+        },
+        {
+            "id": "retro_vehicles",
+            "title": "Retro Y2K Vehicles",
+            "thumbnail": "ui/models/vehicle_thumb.png",
+            "images": [
+                "ui/models/vehicle_1.png"
+            ],
+            "description": "Низкополигональные модели транспорта в стилистике конца 90-х и нулевых. Использована техника vertex snapping для передачи аутентичного ретро-вида."
+        }
+    ]
+}

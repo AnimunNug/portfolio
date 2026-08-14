@@ -13,7 +13,7 @@
         }
 
         /* Полное отключение фильтрации пикселей для всех элементов */
-        *, *::before, *::after, img, canvas, .mc-btn-img, .mc-btn-img-mini, .world-image, .world-frame, .pixel-frame, .about-btn-slot {
+        *, *::before, *::after, img, canvas, .mc-btn-img, .mc-btn-img-mini, .world-image, .world-frame, .pixel-frame, .about-btn-slot, .project-thumb-image, .project-thumb-frame, .project-main-image-frame, .project-info-frame {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -263,6 +263,23 @@
             width: 980px; max-width: 92vw; height: 76vh;
             display: flex; flex-direction: column; padding: 24px; position: relative;
         }
+
+        /* Расширенное окно списка моделей и концептов (вмещает 3 превью без уменьшения) */
+        #projects-list-gui .chest-window {
+            width: 1240px;
+            max-width: 96vw;
+            height: 100vh;
+            padding: 0; /* Убираем стандартные отступы сундука, чтобы шапка прилегала идеально */
+        }
+
+        /* Увеличенная ширина и высота окна детального просмотра проекта */
+        #project-detail-gui .chest-window {
+            width: 1440px;
+            max-width: 98vw;
+            height: 88vh;
+            padding: 24px;
+        }
+
         .chest-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .chest-title { font-size: 2.3rem; color: #373737; display: flex; align-items: center; }
         .chest-title-img { height: 36px; width: auto; object-fit: contain; display: block; }
@@ -278,6 +295,7 @@
         ::-webkit-scrollbar { width: 16px; }
         ::-webkit-scrollbar-track { background-image: url('ui/scrollbar_track.png'); background-size: 100% 100%; }
         ::-webkit-scrollbar-thumb { background-image: url('ui/scrollbar_thumb.png'); background-size: 100% 100%; }
+        ::-webkit-scrollbar-corner { background: transparent; }
 
         /* ---------------- СТАТИСТИКА И СЕТКА БЛОКОВ (16x16) ---------------- */
         .blocks-grid-container {
@@ -306,58 +324,138 @@
         /* ---------------- СЕТКА ПРОЕКТОВ (МОДЕЛИ, АРТЫ) ---------------- */
         .projects-grid {
             background-image: url('ui/inventory_grid_bg.png'); background-size: 100% 100%;
-            flex-grow: 1; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px; overflow-y: auto; align-content: start;
+            flex-grow: 1; padding: 24px; display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 24px; overflow-y: auto; align-content: start;
+            scroll-behavior: smooth;
+        }
+
+        /* Специфичный стиль шапки проекта с текстурой шириной 1px, растянутой на всю ширину экрана */
+        .project-head-line {
+            position: absolute;
+            top: 0;
+            left: -400px;
+            width: 150vw;
+            height: 60px; /* Высота шапки */
+            z-index: 2; /* Располагается под текстом заголовка и кнопкой */
+            pointer-events: none;
+        }
+
+        /* Специфичный хэдер для проектов с нулевым отступом и поверх шапки */
+        .projects-custom-header {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            width: 100%;
         }
 
         .project-card {
             background-image: url('ui/item_slot_bg.png'); background-size: 100% 100%;
-            padding: 12px; text-align: center; cursor: pointer; transition: transform 0.1s;
-            display: flex; flex-direction: column; align-items: center; animation: blockPopIn 0.4s backwards;
+            padding: 16px; text-align: center; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center; 
+            animation: blockPopIn 0.4s backwards;
+            transform: scale(var(--scroll-scale, 1));
+            opacity: var(--scroll-scale, 1);
+            transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.15s ease;
+            will-change: transform, opacity;
         }
-        .project-card:hover { transform: scale(1.05); z-index: 5; }
-        .project-card img {
-            width: 100%; aspect-ratio: 16/9; object-fit: cover;
-            background-image: url('ui/image_preview_frame.png'); background-size: 100% 100%; padding: 4px;
+        .project-card:hover { 
+            transform: scale(calc(var(--scroll-scale, 1) * 1.05)); 
+            z-index: 5; 
         }
-        .project-card h4 { font-size: 1.6rem; color: #373737; margin-top: 10px; line-height: 1.1; }
+        
+        .project-image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            margin: 8px 0;
+        }
+        .project-thumb-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .project-thumb-frame {
+            position: absolute;
+            top: -22px;
+            left: -22px;
+            width: calc(100% + 44px);
+            height: calc(100% + 44px);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            z-index: 2;
+            pointer-events: none;
+        }
 
-        /* ---------------- ПРОСМОТР ПРОЕКТА (ARTSTATION СТИЛЬ) ---------------- */
+        .project-card h4 { font-size: 1.8rem; color: #373737; margin-top: 12px; line-height: 1.1; }
+
+        /* ---------------- ПРОСМОТР ПРОЕКТА (ОБНОВЛЕННЫЙ СТИЛЬ С КАРТИНКАМИ-РАМКАМИ) ---------------- */
         .project-detail-layout {
-            display: flex; flex-direction: row; flex-grow: 1; gap: 20px; overflow: hidden;
+            display: flex; flex-direction: row; flex-grow: 1; gap: 24px; overflow: hidden; height: calc(100% - 50px);
         }
         
         .project-gallery-section {
-            flex: 2; display: flex; flex-direction: column; background: #1a1a1a; 
-            border: 4px solid #373737; padding: 10px; position: relative;
+            flex: 3.2; display: flex; flex-direction: column; 
+            background-image: url('ui/inventory_grid_bg.png'); background-size: 100% 100%;
+            padding: 16px; position: relative;
         }
         
         .project-main-image-wrapper {
             flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; width: 100%; height: 100%;
+            background-image: url('ui/item_slot_bg.png'); background-size: 100% 100%;
+            padding: 12px;
+        }
+
+        .project-main-image-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('ui/project_detail_frame.png'); background-size: 100% 100%;
+            pointer-events: none; z-index: 3;
         }
         
         .project-main-image {
-            max-width: 100%; max-height: 100%; object-fit: contain;
-            transition: opacity 0.2s;
+            max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;
+            transition: opacity 0.2s; z-index: 1;
         }
 
-        .carousel-nav-btn {
+        /* Отдельные изображения для стрелок в просмотрщике проекта */
+        #project-detail-gui .carousel-nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%);
             width: 54px; height: 54px; background-size: 100% 100%; background-repeat: no-repeat;
             cursor: pointer; z-index: 10;
         }
-        .carousel-prev { left: 10px; background-image: url('ui/arrow_left_normal.png'); }
-        .carousel-prev:hover { background-image: url('ui/arrow_left_hover.png'); }
-        .carousel-next { right: 10px; background-image: url('ui/arrow_right_normal.png'); }
-        .carousel-next:hover { background-image: url('ui/arrow_right_hover.png'); }
+        #project-detail-gui .carousel-prev { 
+            left: 14px; background-image: url('ui/project_arrow_left_normal.png'); 
+        }
+        #project-detail-gui .carousel-prev:hover { 
+            background-image: url('ui/project_arrow_left_hover.png'); 
+        }
+        #project-detail-gui .carousel-prev:active { 
+            background-image: url('ui/project_arrow_left_active.png'); 
+        }
+        #project-detail-gui .carousel-next { 
+            right: 14px; background-image: url('ui/project_arrow_right_normal.png'); 
+        }
+        #project-detail-gui .carousel-next:hover { 
+            background-image: url('ui/project_arrow_right_hover.png'); 
+        }
+        #project-detail-gui .carousel-next:active { 
+            background-image: url('ui/project_arrow_right_active.png'); 
+        }
 
         .project-thumbnails-strip {
-            display: flex; gap: 8px; margin-top: 10px; overflow-x: auto;
-            padding-bottom: 5px; height: 80px; flex-shrink: 0; justify-content: center;
+            display: flex; gap: 10px; margin-top: 12px; overflow-x: auto;
+            padding-bottom: 5px; height: 86px; flex-shrink: 0; justify-content: center;
+            z-index: 5;
         }
         .project-thumb-slot {
-            width: 70px; height: 70px; background-image: url('ui/item_slot_bg.png'); 
+            width: 76px; height: 76px; background-image: url('ui/item_slot_bg.png'); 
             background-size: 100% 100%; padding: 4px; cursor: pointer; transition: 0.1s;
             opacity: 0.6; flex-shrink: 0;
         }
@@ -366,17 +464,26 @@
         .project-thumb-slot img { width: 100%; height: 100%; object-fit: cover; }
 
         .project-info-section {
-            flex: 1; display: flex; flex-direction: column;
-            background: #c6c6c6; border: 4px inset #ffffff; padding: 16px;
-            box-shadow: inset -2px -2px 0px #555, inset 2px 2px 0px #fff;
+            flex: 1; min-width: 300px; display: flex; flex-direction: column;
+            background-image: url('ui/inventory_grid_bg.png'); background-size: 100% 100%;
+            padding: 20px; position: relative;
         }
+
+        .project-info-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('ui/project_info_frame.png'); background-size: 100% 100%;
+            pointer-events: none; z-index: 3;
+        }
+
         .project-info-title {
             font-size: 2.2rem; color: #222; text-shadow: 1px 1px 0px #eee;
             margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px dashed #777;
+            z-index: 1;
         }
         .project-info-desc {
             font-size: 1.4rem; color: #111; overflow-y: auto; flex-grow: 1; 
             white-space: pre-wrap; line-height: 1.2; padding-right: 5px;
+            z-index: 1;
         }
 
         /* ---------------- GUI ABOUT ME & CONTACTS ---------------- */
@@ -561,15 +668,21 @@
     <!-- ОКНО: СЕТКА ПРОЕКТОВ (МОДЕЛИ / КОНЦЕПТЫ ИЗ JSON) -->
     <div class="ui-layer hidden" id="projects-list-gui">
         <div class="chest-window">
-            <div class="chest-header">
-                <div class="chest-title"><img id="projects-list-title" src="" alt="Projects" class="chest-title-img" onerror="this.style.display='none'; this.parentNode.innerHTML='Projects';"></div>
+            <!-- Растянутая шапка на всю ширину экрана с нулевым отступом -->
+            <img src="ui/project_head.png" class="project-head-line">
+            
+            <div class="projects-custom-header">
+                <div class="chest-title">
+					<img id="projects-list-title" src="" alt="Projects" class="chest-title-img" onerror="this.style.display='none'; document.getElementById('projects-list-text').style.display='block';">
+					<span id="projects-list-text" style="display:none; color: #373737; font-size: 2.3rem;">Projects</span>
+				</div>
                 <button class="pixel-close-btn" onclick="playUiSound('click'); closeToWorldSelect();"></button>
             </div>
             <div class="projects-grid" id="projects-grid"></div>
         </div>
     </div>
 
-    <!-- ОКНО: ДЕТАЛЬНЫЙ ПРОСМОТР ПРОЕКТА (ARTSTATION STYLE) -->
+    <!-- ОКНО: ДЕТАЛЬНЫЙ ПРОСМОТР ПРОЕКТА (ОБНОВЛЕННЫЕ РАМКИ И СТРЕЛКИ) -->
     <div class="ui-layer hidden" id="project-detail-gui">
         <div class="chest-window">
             <div class="chest-header">
@@ -578,22 +691,24 @@
             </div>
             
             <div class="project-detail-layout">
-                <!-- Левая часть: Карусель -->
+                <!-- Левая часть: Карусель с рамочным оверлеем -->
                 <div class="project-gallery-section">
                     <div class="project-main-image-wrapper">
                         <div class="carousel-nav-btn carousel-prev" onclick="changeProjectImage(-1)"></div>
                         <img id="project-main-image" class="project-main-image" src="" alt="Project Image">
                         <div class="carousel-nav-btn carousel-next" onclick="changeProjectImage(1)"></div>
+                        <div class="project-main-image-frame"></div>
                     </div>
                     <div class="project-thumbnails-strip" id="project-thumbnails-strip">
                         <!-- Миниатюры инжектятся сюда -->
                     </div>
                 </div>
 
-                <!-- Правая часть: Описание -->
+                <!-- Правая часть: Описание с рамочным оверлеем -->
                 <div class="project-info-section">
                     <div class="project-info-title" id="project-info-title">Название проекта</div>
                     <div class="project-info-desc" id="project-info-desc">Описание проекта...</div>
+                    <div class="project-info-frame"></div>
                 </div>
             </div>
         </div>
@@ -726,7 +841,7 @@
 
         /* ---------------- ПАСХАЛКА ---------------- */
         let btn5Clicks = 0; let btn6Clicks = 0; let buttonSequence = ""; let popupTimeout; 
-        const imageAliases = { /* ...ваша логика пасхалок... */ '666': '555', '5565': '555', '665': '556', '55656': '55566' };
+        const imageAliases = { '666': '555', '5565': '555', '665': '556', '55656': '55566' };
 
         function clickBtn5() {
             const btn = document.getElementById('btn-5');
@@ -891,9 +1006,11 @@
         }
 
         /* ---------------- СЕТКА ПРОЕКТОВ (МОДЕЛИ / КОНЦЕПТЫ) ---------------- */
-        let currentProjectsData = []; // Храним загруженные данные
+        let currentProjectsType = 'models';
+        let currentProjectsData = [];
 
         async function openProjectsGridGUI(type) {
+            currentProjectsType = type;
             document.getElementById('world-select-gui').classList.add('hidden');
             document.getElementById('projects-list-gui').classList.remove('hidden');
             
@@ -913,7 +1030,7 @@
                 console.warn(`Не удалось загрузить ${type}.json. Запуск демо-режима:`, err);
                 currentProjectsData = [{
                     id: "demo", title: "Демо Проект", description: "Создайте JSON файл, чтобы увидеть свои проекты.",
-                    thumbnail: "ui/portfolio/demo_thumb.png", images: ["ui/portfolio/demo1.png"]
+                    thumbnail: "ui/demo_thumb.png", images: ["ui/demo1.png"]
                 }];
                 renderProjectsGrid(currentProjectsData);
             }
@@ -927,13 +1044,51 @@
                 card.style.animationDelay = `${Math.min(index * 0.05, 0.5)}s`;
                 card.onclick = () => { playUiSound('click'); openProjectDetail(proj); };
                 
+                const frameImg = currentProjectsType === 'models' ? 'ui/project_frame_models.png' : 'ui/project_frame_concepts.png';
+                
                 card.innerHTML = `
-                    <img src="${proj.thumbnail}" alt="${proj.title}">
+                    <div class="project-image-wrapper">
+                        <img src="${proj.thumbnail}" alt="${proj.title}" class="project-thumb-image">
+                        <div class="project-thumb-frame" style="background-image: url('${frameImg}');"></div>
+                    </div>
                     <h4>${proj.title}</h4>
                 `;
                 gridContainer.appendChild(card);
             });
+
+            setTimeout(updateProjectsScrollEffect, 50);
         }
+
+        /* ---------------- ЛОГИКА УМЕНЬШЕНИЯ КАРТОЧЕК ПРИ СКРОЛЛЕ ---------------- */
+        function updateProjectsScrollEffect() {
+            const grid = document.getElementById('projects-grid');
+            if (!grid) return;
+            const gridRect = grid.getBoundingClientRect();
+            const cards = grid.querySelectorAll('.project-card');
+            const threshold = 110; // Зона быстрого уменьшения возле верхней и нижней границы
+
+            cards.forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                
+                // Расстояние от низа карточки до верхнего края сетки
+                const distFromTop = cardRect.bottom - gridRect.top;
+                // Расстояние от верха карточки до нижнего края сетки
+                const distFromBottom = gridRect.bottom - cardRect.top;
+
+                let scale = 1;
+
+                if (distFromTop < threshold) {
+                    scale = distFromTop / threshold;
+                } else if (distFromBottom < threshold) {
+                    scale = distFromBottom / threshold;
+                }
+
+                scale = Math.max(0, Math.min(1, scale));
+                card.style.setProperty('--scroll-scale', scale.toFixed(3));
+            });
+        }
+
+        document.getElementById('projects-grid').addEventListener('scroll', updateProjectsScrollEffect);
 
         /* ---------------- ЛОГИКА ДЕТАЛЬНОГО ПРОСМОТРА ПРОЕКТА ---------------- */
         let currentProjectImages = [];
@@ -957,6 +1112,7 @@
         function closeProjectDetail() {
             document.getElementById('project-detail-gui').classList.add('hidden');
             document.getElementById('projects-list-gui').classList.remove('hidden');
+            setTimeout(updateProjectsScrollEffect, 50);
         }
 
         function renderProjectThumbnails() {
@@ -980,13 +1136,12 @@
 
         function updateProjectMainImage() {
             const mainImg = document.getElementById('project-main-image');
-            mainImg.style.opacity = 0; // Плавный переход
+            mainImg.style.opacity = 0;
             setTimeout(() => {
                 mainImg.src = currentProjectImages[currentProjectImageIndex];
                 mainImg.style.opacity = 1;
             }, 100);
 
-            // Обновляем активный класс в ленте
             const thumbs = document.querySelectorAll('.project-thumb-slot');
             thumbs.forEach((el, idx) => {
                 if (idx === currentProjectImageIndex) el.classList.add('active');
@@ -1009,7 +1164,7 @@
             updateProjectMainImage();
         }
 
-        /* ---------------- ЛОГИКА ТУЛТИПОВ (ОСТАВЛЕНА БЕЗ ИЗМЕНЕНИЙ) ---------------- */
+        /* ---------------- ЛОГИКА ТУЛТИПОВ ---------------- */
         const tooltipElem = document.getElementById('about-tooltip');
         const tooltipImg = document.getElementById('about-tooltip-img');
         const slotTooltips = { 'about-slot-1': 'ui/desc_slot_1.png', 'about-slot-2': 'ui/desc_slot_2.png', 'about-slot-3': 'ui/desc_slot_3.png', 'about-slot-4': 'ui/desc_slot_4.png', 'about-slot-5': 'ui/desc_slot_5.png' };
@@ -1032,10 +1187,6 @@
         });
         function hideTooltip() { tooltipElem.style.display = 'none'; tooltipImg.src = ''; }
 
-        /* ---------------- ПРЕДЗАГРУЗКА ---------------- */
-        function preloadUIImages(urls) { urls.forEach(url => { const img = new Image(); img.src = url; }); }
-        window.addEventListener('DOMContentLoaded', () => { /* Предзагрузка тут */ });
-
         /* ---------------- THREE.JS SKYBOX ---------------- */
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -1051,12 +1202,12 @@
         }
 
         const skyMaterials = [
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_3.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_4.png'), side: THREE.BackSide }),
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_2.png'), side: THREE.BackSide }),
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_top.png'), side: THREE.BackSide }),
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_bottom.png'), side: THREE.BackSide }),
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_1.png'), side: THREE.BackSide }),
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_4.png'), side: THREE.BackSide })
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_3.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_1.png'), side: THREE.BackSide })
         ];
         
         scene.add(new THREE.Mesh(new THREE.BoxGeometry(900, 900, 900), skyMaterials));
