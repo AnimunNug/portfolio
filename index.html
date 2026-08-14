@@ -1051,12 +1051,12 @@
         }
 
         const skyMaterials = [
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_1.png'), side: THREE.BackSide }),
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_4.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_3.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_2.png'), side: THREE.BackSide }),
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_top.png'), side: THREE.BackSide }),
             new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_bottom.png'), side: THREE.BackSide }),
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_3.png'), side: THREE.BackSide }),
-            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_2.png'), side: THREE.BackSide })
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_1.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_4.png'), side: THREE.BackSide })
         ];
         
         scene.add(new THREE.Mesh(new THREE.BoxGeometry(900, 900, 900), skyMaterials));
