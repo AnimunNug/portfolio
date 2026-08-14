@@ -1036,12 +1036,46 @@
         function preloadUIImages(urls) { urls.forEach(url => { const img = new Image(); img.src = url; }); }
         window.addEventListener('DOMContentLoaded', () => { /* Предзагрузка тут */ });
 
-        /* ---------------- THREE.JS SKYBOX (ОСТАВЛЕН БЕЗ ИЗМЕНЕНИЙ) ---------------- */
+        /* ---------------- THREE.JS SKYBOX ---------------- */
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('skybox-container').appendChild(renderer.domElement);
+
+        const textureLoader = new THREE.TextureLoader();
+        function loadSkyTexture(path) {
+            const tex = textureLoader.load(path);
+            tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
+            return tex;
+        }
+
+        const skyMaterials = [
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_1.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_2.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_top.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_bottom.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_3.png'), side: THREE.BackSide }),
+            new THREE.MeshBasicMaterial({ map: loadSkyTexture('ui/skybox_side_4.png'), side: THREE.BackSide })
+        ];
+        
+        scene.add(new THREE.Mesh(new THREE.BoxGeometry(900, 900, 900), skyMaterials));
+
+        let lon = 0, lat = 0, phi = 0, theta = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            lon += 0.05; lat = Math.max(-85, Math.min(85, lat));
+            phi = THREE.MathUtils.degToRad(90 - lat); theta = THREE.MathUtils.degToRad(lon);
+            camera.position.set(100 * Math.sin(phi) * Math.cos(theta), 100 * Math.cos(phi), 100 * Math.sin(phi) * Math.sin(theta));
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
