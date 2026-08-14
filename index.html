@@ -284,28 +284,30 @@
             flex-grow: 1;
             padding: 16px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+            gap: 3px;
             overflow-y: auto;
             align-content: start;
         }
 
         .block-item-slot {
-            width: 200%;
+            width: 100%;
             aspect-ratio: 1 / 1;
             background-image: url('ui/item_slot_bg.png');
             background-size: 100% 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px;
+            padding: 8px;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.1s ease, z-index 0.1s ease;
         }
 
         .block-item-slot:hover {
-            transform: scale(1.18);
-            z-index: 10;
+            transform: scale(1.2);
+            z-index: 20;
         }
 
         .block-item-slot img {
@@ -515,7 +517,7 @@
         </div>
     </div>
 
-    <!-- НОВОЕ ОКНО: 16x16 БЛОКИ ИЗ JSON -->
+    <!-- ОКНО 16x16 БЛОКИ ИЗ JSON -->
     <div class="ui-layer hidden" id="blocks-gui">
         <div class="chest-window">
             <div class="chest-header">
@@ -707,7 +709,7 @@
         function openWorldSelect() {
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('world-select-gui').classList.remove('hidden');
-            currentCarouselIndex = 0; // Начинаем с блоков (индекс 0)
+            currentCarouselIndex = 0;
             renderWorldsCarousel();
             document.addEventListener('keydown', carouselKeyHandler);
         }
@@ -835,22 +837,21 @@
             gridContainer.innerHTML = '';
 
             try {
-                // Запрос файла blocks.json
                 const response = await fetch('blocks.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
                 
-                // Поддержка структуры массивов: ["path.png", ...] или объектов [{ "src": "path.png" }]
                 let rawList = Array.isArray(data) ? data : (data.blocks || []);
                 let imagePaths = rawList.map(item => typeof item === 'string' ? item : (item.src || item.path || item.img));
                 
-                // Убираем возможные повторяющиеся элементы через Set
                 const uniqueImages = [...new Set(imagePaths)].filter(Boolean);
 
                 renderBlocksGrid(uniqueImages);
             } catch (err) {
                 console.warn('Не удалось загрузить blocks.json (проверьте наличие файла). Запуск демо-набора:', err);
                 
-                // Демонстрационный набор на случай отсутствия локального сервера / файла
                 const demoImages = [
                     'ui/blocks/dirt.png', 'ui/blocks/grass.png', 'ui/blocks/stone.png',
                     'ui/blocks/cobblestone.png', 'ui/blocks/planks.png', 'ui/blocks/sand.png',
@@ -873,7 +874,6 @@
                 img.src = imgSrc;
                 img.alt = '16x16 Block';
                 
-                // Добавляем плавную задержку поочередного разжатия (каскадный эффект)
                 img.style.animationDelay = `${Math.min(index * 0.02, 0.5)}s`;
 
                 slot.appendChild(img);
